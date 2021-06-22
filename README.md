@@ -13,4 +13,5 @@ print "hello!"
 ```
 
 
-
+pycharm使用技巧:
+多行选择: shift+alt+点击鼠标左键
