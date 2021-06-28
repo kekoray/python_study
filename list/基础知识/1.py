@@ -3,7 +3,8 @@
 # @Author : koray
 # @File :
 
-import requests
+# import requests
+import abc
 import sys
 from math import sin as s
 import keyword
@@ -39,25 +40,32 @@ e = complex(float(a), float(b))
 #
 #
 # 字符串输出形式
-# 1. %s(字符串),%d(整型)
-# 2. {0} + format()
-# 3. +形式, 前后都只能是string
-# 4. ,形式
+# 1.占位符形式   %s(字符串),%d(整型),%f(浮点)
+print('abc + %d' % 2)
+print('abc + %s' % 'cc')
+# 2.format()形式
+print('abc + {0}'.format('kk', 2))
+# 3.加号+形式, 前后都只能是string
+print('abc' + '2')
+# 4.逗号,形式
+print('abc', 'def')
+# 5.f形式
+a = 'def'
+print(f'abc + {a} ')
 
-
-# 定义字符串
-_str = '123456789'
-
-# 字符串截取:变量[开始:结束:步长],
-print(_str[0:8:2])  # 输出第1个开始到第8个且每隔1个字符
-print(_str[0:-1])  # 输出第1个到倒数第2个的所有字符
-
-# 字符串内容为浮点型要转换为整型时,要先转化成float再转换成int
-print(int(float("2.1")))
-
-# 斜杠可以用来转义, 使用r可以让反斜杠不发生转义.
-print('\n')  # 输出空行
-print(r'\n')  # 输出 \n
+# # 定义字符串
+# _str = '123456789'
+#
+# # 字符串截取:变量[开始:结束:步长],
+# print(_str[0:8:2])  # 输出第1个开始到第8个且每隔1个字符
+# print(_str[0:-1])  # 输出第1个到倒数第2个的所有字符
+#
+# # 字符串内容为浮点型要转换为整型时,要先转化成float再转换成int
+# print(int(float("2.1")))
+#
+# # 斜杠可以用来转义, 使用r可以让反斜杠不发生转义.
+# print('\n')  # 输出空行
+# print(r'\n')  # 输出 \n
 
 #
 # # 文件目录操作
