@@ -60,7 +60,7 @@ _str2 = ['123456789',
 
 
 
-### 工具包引入
+### 模块导入
 
 ```python
 import package
@@ -932,6 +932,213 @@ sorted(a,key = lambda x:x+1,reverse = True)     # [5, 4, 0, -1, -2, -3]
 ```
 
 
+
+
+
+## 类与对象
+
+
+
+### 类定义
+
+**类**: 作为设计蓝图来创建对象的代码段.
+
+**对象**: 是类的一个实例, 通过类的构造函数创建.
+
+```python
+class 类目(父类):      # 父类可以很多个,默认继承object
+     """说明文档"""
+     # 类体
+```
+
+
+
+### 继承
+
+```python
+class Animal(object) :
+    def run(self) :
+        print("runing...")
+
+class cat(Animal) :
+    pass
+```
+
+
+
+### 私有化
+
+**模块私有化**: 在属性或方法前加一个下划线`_`, 只能在本模块中使用.
+
+**完全私有化**: 在属性或方法前加双下划线`__`, 只能内部访问, 实际是假私有化,可通过 `_类目.属性/方法`访问.
+
+```python
+
+
+```
+
+
+
+
+
+### 函数与方法
+
+**函数**: 可直接调用, 不属于某个类的函数.
+
+**方法**: 通过`对象.方法名`调用, 属于某个类的函数.
+
+- **实例方法**: 第一个参数为self, 调用时需要传递实例给self.
+- **静态方法**: 通过`@staticmethod`实现, 使用时不需要类或实例本身,和函数相似.
+- **类方法**: 通过`@classmethod`实现, 第一个参数cls,调用时需要传递类型给类方法.
+
+```
+
+```
+
+
+
+### 魔法方法
+
+**魔法方法**: 指的是python内置的,被双下划线所包围的方法.
+
+```python
+class test(object):
+
+    # 构造方法,创建实例时首先调用的方法,一般用于单例模式
+    def __new__(cls) -> Any:
+        return super().__new__()
+
+    # 对象初始化方法,new方法返回对象后,调用init方法进行属性的初始化
+    def __init__(self) -> None:
+        super().__init__()
+
+    def __del__(self):
+        pass
+
+    def __len__(self):
+        pass
+
+    def __bool__(self):
+        pass
+
+    def __str__(self) -> str:
+        return super().__str__()
+
+    def __repr__(self) -> str:
+        return super().__repr__()
+
+    def __getattr__(self, name):
+        pass
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        return super().__setattr__(name, value)
+
+    # 属性访问拦截器,定义当该类的属性被访问时的行为.
+    def __getattribute__(self, name: str) -> Any:
+        return super().__getattribute__(name)
+```
+
+
+
+### 魔法属性
+
+**魔法方法**: 指的是python内置的,被双下划线所包围的属性.
+
+```python
+__dict__
+__doc__
+__name__
+__module__
+__bases__
+```
+
+
+
+
+
+## 模块
+
+```python
+
+
+ 
+""" 
+在python中,一个py文件就是一个模块,是最高级别的组织单元
+代码复用
+系统命名空间得划分
+实现共享服务和数据
+
+包是一个目录,由多个模块组成,其中必须包含__init__.py文件.
+
+produce
+    __init__.py
+
+
+
+"""
+
+# 模块导入
+
+# import搜索路径顺序
+
+# 查看路径
+sys.path
+
+
+
+# 内置工具包
+
+# os是负责与操作系统的模块
+import os 
+os.getcwd()
+os.chdir("path")
+os.listdir()
+os.walk()
+
+# os.path子模块
+os.path.join("path")
+os.path.abspath("path")
+os.path.exists("path")
+os.path.getsize("path")
+os.path.isfile("path")
+os.path.isdir("path")
+
+
+# sys是负责与解释器交互的模块
+import sys
+sys.exit([n])
+sys.path
+sys.platform
+
+sys.argv[1]
+
+
+# time是处理时间的模块
+import time
+time.time()
+time.localtime()  # time.struct_time(tm_year=2021, tm_mon=7, tm_mday=23, tm_hour=18, tm_min=2, tm_sec=58, tm_wday=4, tm_yday=204, tm_isdst=0)
+time.asctime()
+time.strftime(format="",time.time())
+
+
+# datetime
+import datetime
+datetime.date
+datetime.time
+datetime.datetime
+datetime.timedelta
+
+
+
+# randmo是提供随机函数的模块
+import random
+random.random()
+random.random(m,n)
+
+
+
+
+```
 
 
 
