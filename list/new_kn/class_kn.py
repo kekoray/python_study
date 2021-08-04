@@ -32,22 +32,24 @@ class Student(object):
     def __del__(self):
         pass
 
-    # 定义当被__len__()调用时的操作
+    # 定义当被len()调用时的操作
     def __len__(self):
         pass
 
-    # 定义当被__bool__()调用时的操作,返回true/false
+    # 定义当被bool()调用时的操作,返回true/false
     def __bool__(self):
         pass
 
-    # 定义当被__str__()调用时的操作,默认返回对象信息
-    # 可重写该方法,类似Java的toString方法,将值转化为适于人阅读的形式
+    # 定义当被str()调用或者print()时的操作
+    # 可重写该方法,类似Java的toString方法,返回指定格式进行显示
     def __str__(self) -> str:
-        return "name: %s , age : %s" % (self.__name, self.__age)
+        return "str方法 ==> name: %s , age : %s" % (self.__name, self.__age)
 
-    # 定义当被__repr__()调用时的操作,
+    # 定义当被repr()调用或者print()时的操作
+    # 可重写该方法,类似Java的toString方法,返回指定格式进行显示
+    # 当类中没有str方法时,会调用repr方法,所以一般类中需要定义repr方法
     def __repr__(self) -> str:
-        return super().__repr__()
+        return "repr方法 ==> name: %s , age : %s" % (self.__name, self.__age)
 
     # 定义当用户试图获取一个不存在的属性时的操作
     def __getattr__(self, name):
@@ -64,8 +66,10 @@ class Student(object):
 
 if __name__ == '__main__':
     s = Student("kk", 25)
-    print(s.__str__())  # name: kk , age : 25
-    print(s.__repr__())
+    print(s)  # name: kk , age : 25
+    print(str(s))  # name: kk , age : 25
+    print(repr(s))  # repr方法 ==> name: kk , age : 25
+
 # class Student(object):
 #
 #     # 类级别的静态方法,在类实例化时调用,至少传递1个参数cls

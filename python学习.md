@@ -1038,6 +1038,8 @@ if __name__ == '__main__':
 
 #### new方法/init方法
 
+> 一般使用init方法较多
+
 ```python
 class Student(object):
 
@@ -1074,7 +1076,38 @@ if __name__ == '__main__':
 
 
 
+#### str方法与repr方法
 
+> 一般使用repr方法较多
+
+```python
+class Student(object):
+
+    def __init__(self, name, age):
+        self.__name = name
+        self.__age = age
+
+        
+    # 定义当被str()调用或者print()时的操作
+    # 可重写该方法,类似Java的toString方法,返回指定格式进行显示
+    def __str__(self) -> str:
+        return "str方法 ==> name: %s , age : %s" % (self.__name, self.__age)
+
+    
+    # 定义当被repr()调用或者print()时的操作
+    # 可重写该方法,类似Java的toString方法,返回指定格式进行显示
+    # 当类中没有str方法时,会调用repr方法,所以一般类中需要定义repr方法
+    def __repr__(self) -> str:
+        return "repr方法 ==> name: %s , age : %s" % (self.__name, self.__age)
+
+
+if __name__ == '__main__':
+    s = Student("kk", 25)
+    print(s)            # str方法 ==> name: kk , age : 25
+    print(str(s))       # str方法 ==> name: kk , age : 25
+    print(repr(s))      # repr方法 ==> name: kk , age : 25
+
+```
 
 
 
