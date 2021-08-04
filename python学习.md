@@ -968,40 +968,25 @@ class cat(Animal) :
 
 ### 私有化
 
-**模块私有化**: 在属性或方法前加一个下划线`_`, 只能在本模块中使用.
+**模块私有化**: 在属性或方法前加一个下划线`_`, 只能在本模块中使用, 作用是禁止import导入使用.
 
-**完全私有化**: 在属性或方法前加双下划线`__`, 就变成了一个私有变量或方法(private), 只有内部可以访问.
-
-
+**完全私有化**: 在属性或方法前加双下划线`__`, 就是私有变量或方法(类似private), 作用是避免与子类中的属性命名冲突.
 
 ```python
-# 私有变量 
-__addr = "china"
-
-# 私有方法
-def __print_meg(self, addr=__addr):
-	print("%s,%s,%s" % (self.__name, self.__age, addr))
-```
-
-
-
-实际是假私有化,可通过 `_类目.属性/方法`访问.
-
-```
-
 class Student(object):
-    # 在Python中，实例的变量名如果以__开头,就变成了一个私有变量(private),只有内部可以访问,外部不能访问
+    # 实例的变量名如果以__开头,就是私有变量(类似private),主要作用是避免与子类中的属性命名冲突
+    # 只能内部可以访问,外部也可以使用(对象._类名__变量名)方式调用
     __addr = "china"
 
-    # __init__方法的第一个参数永远是self,表示创建的实例本身;在创建实例的时候,必须传入与init方法匹配的参数,self不需要传
     def __init__(self, name, age):
+        # 私有变量,类似private效果
         self.__name = name
         self.__age = age
 
     def print_meg(self, addr=__addr):
-        print("%s,%s,%s" % (self.__name, self.__age, addr))
+        print("name: %s , age : %s , addr :%s" % (self.__name, self.__age, addr))
 
-    # 类似Java的get/set方法
+    # 若要外部访问和修改变量,可以使用类似Java的get/set方法
     def get_name(self):
         return self.__name
 
@@ -1014,12 +999,16 @@ class Student(object):
     def set_age(self, age):
         self.__age = age
 
-
+        
 if __name__ == '__main__':
-    s = Student("kk", "25")
-    s.print_meg()
-
+    s = Student("kk", 25)
+    s.print_meg()     # name: kk , age : 25 , addr :china
+    print(s._Student__name)     # kk
 ```
+
+
+
+
 
 
 
@@ -1045,16 +1034,54 @@ if __name__ == '__main__':
 
 **魔法方法**: 指的是python内置的,被双下划线所包围的方法.
 
+
+
+#### new方法/init方法
+
+```python
+class Student(object):
+
+    # 类级别的静态方法,创建实例时首先调用的方法,至少传递1个参数cls
+    # 返回值必须是实例化出来的实例,即返回super(当前类名,cls).__new__(cls)
+    # 一般用于单例模式,一旦重写该方法,就要和init方法声明的参数一致
+    def __new__(cls, name, age) -> Any:
+        return super(Student, cls).__new__(cls)
+
+    # def __new__(cls) -> Any:
+    #     """
+    #     重写new方法,实例化对象取决于new方法返回什么就是什么
+    #     """
+    #     return "abc"
+   
+    
+    # 实例级别的对象初始化方法,类似构造函数,new方法返回对象后,调用init方法进行属性的初始化
+    # 第1个参数必须是self,表示new方法返回的实例本身
+    # 若new方法没有返回当前类的cls实例,那init方法将不会被调用
+    # 在创建实例时,必须传入与init方法声明的参数,self除外
+    def __init__(self, name, age) -> None:
+        self.name = name
+        self.age = age
+
+    def print_meg(self):
+        print("name: %s , age : %s" % (self.name, self.age))
+        
+        
+if __name__ == '__main__':
+    s = Student("kk", 25)
+    print(s)     # <__main__.Student object at 0x000002AE0DB69670>  /  abc
+    s.print_meg()
+```
+
+
+
+
+
+
+
 ```python
 class test(object):
 
-    # 构造方法,创建实例时首先调用的方法,一般用于单例模式
-    def __new__(cls) -> Any:
-        return super().__new__()
-
-    # 对象初始化方法,new方法返回对象后,调用init方法进行属性的初始化
-    def __init__(self) -> None:
-        super().__init__()
+ 
 
     def __del__(self):
         pass
