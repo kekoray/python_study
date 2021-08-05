@@ -953,15 +953,53 @@ class 类目(父类):      # 父类可以很多个,默认继承object
 
 
 
-### 继承
+### 获取对象信息
 
 ```python
-class Animal(object) :
-    def run(self) :
+c = []
+
+# 查看对象类型
+print(type(c))  # <class 'list'>
+
+# 判断对象是否为给定的类型
+print(isinstance(c, tuple))  # False
+
+# 获得对象的所有属性和方法
+print(dir(c))  # ['__add__', '__class__', '__contains__', ...]
+
+# 判断对象是否有给定的属性名
+print(hasattr(c, "__class__"))  # True
+```
+
+
+
+
+
+### 继承与多态
+
+```python
+class Animal(object):
+    def run(self):
         print("runing...")
 
-class cat(Animal) :
-    pass
+        
+# 继承的体现,重写父类的方法 
+class cat(Animal):
+    def run(self):
+        print("%s runing..." % __class__.__name__)
+        
+        
+def run_twice(animal_name):
+    animal_name.run()
+
+    
+if __name__ == '__main__':
+    c = cat()
+    c.run()    # cat runing...
+
+    # 多态的体现 
+    run_twice(Animal())    # runing...
+    run_twice(c)           # cat runing...
 ```
 
 
@@ -1021,7 +1059,7 @@ if __name__ == '__main__':
 **方法**: 通过`对象.方法名`调用, 属于某个类的函数.
 
 - **实例方法**: 第一个参数为self, 调用时需要传递实例给self.
-- **静态方法**: 通过`@staticmethod`实现, 使用时不需要类或实例本身,和函数相似.
+- **静态方法**: 通过`@staticmethod`实现, 调用时不需要类或实例本身,和函数相似.
 - **类方法**: 通过`@classmethod`实现, 第一个参数cls,调用时需要传递类型给类方法.
 
 ```
@@ -1032,13 +1070,13 @@ if __name__ == '__main__':
 
 ### 魔法方法
 
-**魔法方法**: 指的是python内置的,被双下划线所包围的方法.
+**魔法方法**: 指的是python内置的,被双下划线所包围的方法; Python中一般不会被直接显示调用, 而是通过类的其他行为隐式调用的一类特殊方法.
 
 
 
-#### new方法/init方法
+#### new方法 / init方法
 
-> 一般使用init方法较多
+> 一般使用init方法较多.
 
 ```python
 class Student(object):
@@ -1076,9 +1114,9 @@ if __name__ == '__main__':
 
 
 
-#### str方法与repr方法
+#### str方法 / repr方法
 
-> 一般使用repr方法较多
+> 一般使用repr方法较多.
 
 ```python
 class Student(object):
@@ -1111,35 +1149,156 @@ if __name__ == '__main__':
 
 
 
+#### getattr方法 / setattr方法 / getattribute方法
+
+> getattr方法作用于访问不存在属性时, 返回自定义异常信息等.
+>
+> setattr方法用于属性设置值时的提示操作等.
+>
+> getattribute方法用于查看权限、打印log日志等.
+
 ```python
-class test(object):
+class Student(object):
+    
+	# 类属性
+    country = "china"
 
- 
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+   
 
-    def __del__(self):
-        pass
-
-    def __len__(self):
-        pass
-
-    def __bool__(self):
-        pass
-
-    def __str__(self) -> str:
-        return super().__str__()
-
-    def __repr__(self) -> str:
-        return super().__repr__()
-
+    # 定义当用户访问一个不存在的属性时的操作
+    # 一般访问不存在属性时会抛出异常,重写该方法对异常进行自定义提示
     def __getattr__(self, name):
-        pass
+        print("获取不到该属性")
+        return "Can't find the attribute ..."
 
+    
+    # 定义当一个属性被设置值时的操作
+    # 在实例化调用init方法给对象初始化赋值时,也会调用该方法
     def __setattr__(self, name: str, value: Any) -> None:
-        return super().__setattr__(name, value)
+        print("对 %s 设置属性值为 %s" % (name, value))
+        # 重写方法时必须有其一种方式,避免无限递归情况,也可以使用 self.__dict__[name] = value
+        super().__setattr__(name, value)
 
-    # 属性访问拦截器,定义当该类的属性被访问时的行为.
+        
+    # 属性访问拦截器,定义当该类的属性被访问时的行为
+    # 每次访问属性时都会被调用1次,若直接用(类名.类属性)形式调用类属性,是不会调用该方法
+    # 一般用于查看权限、打印log日志等
     def __getattribute__(self, name: str) -> Any:
+        print("开启属性访问拦截器..")
+        if name == "name":
+            print("开始调用name属性")
+        elif name == "age":
+            print("开始调用age属性")
+        else:
+            print("开始调用其他属性")
+        # 重写方法时必须返回相应的属性,避免无限递归和调用属性失败的情况
         return super().__getattribute__(name)
+
+
+if __name__ == '__main__':
+    s = Student("kk", 25)    # 对 _Student__name 设置属性值为 kk  /  对 age 设置属性值为 25
+    print(s)                 # name: kk , age : 25
+    print(s.age)             # 开启属性访问拦截器..  /  开始调用age属性  /  25
+    s.age = 100        		 # 对 age 设置属性值为 100
+    print(s.age) 			 # 开启属性访问拦截器..  /  开始调用age属性  /  100
+    print(s.addr)		     # 开启属性访问拦截器..  /  开始调用其他属性  /  Can't find the attribute ...
+    print(Student.country)   # china
+```
+
+
+
+#### del方法 / delattr方法
+
+> 尽量不要使用del方法
+
+```python
+class Student(object):
+    
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+        
+
+    # 析构方法,定义当被del(对象)调用时的操作,销毁对象并释放其空间,程序结束时会自动调用该方法
+    # 手动调用时,只有当对象引用为0的时候才会被调用,否则del(对象)删除的是对象的引用
+    # 自定义del方法的实例无法被Python循环垃圾收集器收集,所以尽量不要自定义重写del方法
+    def __del__(self):
+        print("销毁对象 : %s" % self)
+
+        
+    # 删除属性的方法,定义当被del(属性)调用时的操作
+    def __delattr__(self, name: str) -> None:
+        print("删除%s属性" % name)
+        # 重写方法时必须带有,避免无限递归
+        super().__delattr__(name)
+
+        
+if __name__ == '__main__':
+    s = Student("kk", 25)
+    t = s
+    print(s)  # <__main__.Student object at 0x0000021A1F38C670>
+    print(t)  # <__main__.Student object at 0x0000021A1F38C670>
+    print(s.age)  # name: kk , age : 25
+    del (s.age)  # 删除age属性
+    print(s.age)  # Can't find the attribute ...
+    del (t)  # 删除对象的引用,没有调用__del__方法
+    del (s)  # 对象引用为0时调用__del__方法  ==>  销毁对象 : <__main__.Student object at 0x00000215107FC670>
+    '''
+    程序执行完毕后,也会自动调用__del__方法,销毁s的实例化对象
+    销毁对象 : <__main__.Student object at 0x000002CEC612C280>
+    '''        
+```
+
+
+
+
+
+#### len方法 / bool方法
+
+```python
+class Student(object):
+
+    def __init__(self, *args):
+        self.__name = args[0]
+        self.__age = args[1]
+        self.number = args
+
+    def get_name(self):
+        return self.__name
+
+    def get_age(self):
+        return self.__age
+
+    def set_name(self, name):
+        self.__name = name
+
+    def set_age(self, age):
+        self.__age = age
+        
+        
+    # 定义当被len(对象)调用时的操作,获取实例对象传入参数的个数,返回值为int类型
+    # 若有私有属性,最好定义__len__方法
+    def __len__(self):
+        print("获取 %s 类传入参数的个数" % __class__.__name__)
+        return len(self.number)
+
+    
+    # 定义当被bool(对象)调用时的操作,返回值为True/False
+    # 当该对象参与任何真值判断时,都会先调用该方法,但除了bool(对象.属性)方式外
+    def __bool__(self):
+        print("判断age是否大于18岁")
+        return True if self.__age > 18 else False
+
+
+if __name__ == '__main__':
+    s = Student("kk", 22, "china")
+    print(len(s))  # 获取类的传入参数个数  ==>  3
+    print(len(s.get_name()))  # 获取该元素的字符长度  ==>  2
+    print(bool(s))  # 判断age是否大于18岁  /  True
+    if s: print("oooo")  # 判断age是否大于18岁
 ```
 
 
@@ -1149,14 +1308,33 @@ class test(object):
 **魔法方法**: 指的是python内置的,被双下划线所包围的属性.
 
 ```python
+# 类的属性(包含一个字典,由类的数据属性组成)
 __dict__
+
+# 类的文档字符串
 __doc__
+
+# 类名
 __name__
+
+# 类定义所在的模块
 __module__
+
+# 类的所有父类构成元素(包含一个由所有父类组成的元组)
 __bases__
 ```
 
 
+
+
+
+
+
+### 建类模板
+
+```python
+
+```
 
 
 
