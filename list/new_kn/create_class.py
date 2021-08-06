@@ -16,17 +16,19 @@ class Testmd(object):
     def __getattr__(self, name):
         return "Can't find the attribute ..."
 
-    def get_name(self):
-        return self.__name
-
-    def get_age(self):
+    @property
+    def age(self):
         return self.__age
 
-    def set_name(self, name):
-        self.__name = name
-
-    def set_age(self, age):
+    # 设置属性
+    @age.setter
+    def age(self, age):
         self.__age = age
+        return self.__age
+
+    @age.getter
+    def age(self):
+        return self.__age
 
 
 if __name__ == '__main__':

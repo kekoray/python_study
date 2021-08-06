@@ -356,7 +356,7 @@ b * 2     # (2,3,2,3)
 
 ### 4.列表
 
-list是一种有序可变的序列，可以随时添加和删除其中的元素.
+list是一种有序可变的序列, 可以随时添加和删除其中的元素.
 
 ```python
 # 创建空列表
@@ -953,22 +953,39 @@ class 类目(父类):      # 父类可以很多个,默认继承object
 
 
 
-### 获取对象信息
+### 反射获取对象信息
 
 ```python
-c = []
+class Dog(object):
+    
+    def __init__(self, age, name):
+        self.age = age
+        self.name = name
 
-# 查看对象类型
-print(type(c))  # <class 'list'>
+    def eat(self, food):
+        print("%s 吃%s" % (self.name, food))
 
-# 判断对象是否为给定的类型
-print(isinstance(c, tuple))  # False
 
-# 获得对象的所有属性和方法
-print(dir(c))  # ['__add__', '__class__', '__contains__', ...]
+if __name__ == '__main__':
 
-# 判断对象是否有给定的属性名
-print(hasattr(c, "__class__"))  # True
+    dog = Dog(3, "大黄")
+
+    # 查看对象类型
+    print(type(dog))               # <class '__main__.Dog'>
+    # 判断对象是否为给定的类型
+    print(isinstance(dog, Dog))    # True
+    # 获得对象的所有属性和方法
+    print(dir(dog))                # ['__add__', '__class__', '__contains__', ...]
+
+    # 判断对象是否有name_str的属性或者方法
+    if hasattr(dog, "eat"):
+        # 获取对象中与name_str同名的方法或者函数
+        eat = getattr(dog, "eat")
+        food = "骨头"
+        eat(food)
+        # 为对象设置一个以name_str为名的value方法或者属性
+        setattr(dog, "temp", "饱")
+        print("大黄吃%s 了" % dog.temp)
 ```
 
 
@@ -1012,41 +1029,62 @@ if __name__ == '__main__':
 
 ```python
 class Student(object):
-    # 实例的变量名如果以__开头,就是私有变量(类似private),主要作用是避免与子类中的属性命名冲突
-    # 只能内部可以访问,外部也可以使用(对象._类名__变量名)方式调用
+    
+    '''
+    属性名如果以__开头,就是私有变量(类似private),主要作用是避免与子类中的属性命名冲突
+    只能内部可以访问,外部也可以使用(对象._类名__变量名)方式调用
+    '''
+    
+    # 类的私有变量,
     __addr = "china"
 
     def __init__(self, name, age):
-        # 私有变量,类似private效果
+        # 实例的私有变量
         self.__name = name
         self.__age = age
 
-    def print_meg(self, addr=__addr):
-        print("name: %s , age : %s , addr :%s" % (self.__name, self.__age, addr))
+    # 类似toString方法
+    def __repr__(self, addr=__addr) -> str:
+        return "name: %s , age : %s , addr :%s" % (self.__name, self.__age, addr)
 
-    # 若要外部访问和修改变量,可以使用类似Java的get/set方法
-    def get_name(self):
-        return self.__name
-
-    def get_age(self):
+    
+    '''
+    若要外部访问和修改私有属性,可以配合使用[@property,@属性.setter,@属性.getter],类似Java的get/set方法
+    '''
+    
+    # @property: 让方法向属性一样调用
+    @property
+    def age(self):
         return self.__age
 
-    def set_name(self, name):
-        self.__name = name
+    @property
+    def name(self):
+        return self.__name
 
-    def set_age(self, age):
-        self.__age = age
+    # @age.setter: 设置私有属性
+    @age.setter
+    def age(self, age):
+        if 0 < age < 100:
+            self.__age = age
+            return self.__age
+        else:
+            self.__age = 18
+            return self.__age
 
-        
+    # @age.getter: 访问私有属性
+    @age.getter
+    def age(self):
+        return self.__age
+
+
 if __name__ == '__main__':
     s = Student("kk", 25)
-    s.print_meg()     # name: kk , age : 25 , addr :china
-    print(s._Student__name)     # kk
+    print(str(s))  # name: kk , age : 25 , addr :china
+    print(s._Student__name)  # kk
+    print(s.name)  # kk
+    s.age = 10
+    print(s.age)  # 10
 ```
-
-
-
-
 
 
 
@@ -1058,13 +1096,39 @@ if __name__ == '__main__':
 
 **方法**: 通过`对象.方法名`调用, 属于某个类的函数.
 
-- **实例方法**: 第一个参数为self, 调用时需要传递实例给self.
-- **静态方法**: 通过`@staticmethod`实现, 调用时不需要类或实例本身,和函数相似.
-- **类方法**: 通过`@classmethod`实现, 第一个参数cls,调用时需要传递类型给类方法.
+- **实例方法**: 第一个参数为self, 调用时该方法的对象赋值给self.
+- **类方法**: 通过`@classmethod`实现, 第一个参数cls, 调用时需该方法的类赋值给cls.
+- **静态方法**: 通过`@staticmethod`实现, 由`类.方法名`调用.
 
+```python
+class Persion(object):
+    num = 0
+
+    # 实例方法
+    def __init__(self):
+        Persion.num += 1
+
+    # 类方法
+    @classmethod
+    def get_no_of_instance(cls):
+        return cls.num
+
+    # 静态方法
+    @staticmethod
+    def func():
+        return "这是一个静态方法"
+
+
+if __name__ == '__main__':
+    p1 = Persion()
+    p2 = Persion()
+    print(p1.get_no_of_instance())  # 2
+    print(p1.num)  # 2
+    print(p2.num)  # 2
+    print(Persion.func())  # 直接类调用  ==>  这是一个静态方法
 ```
 
-```
+
 
 
 
@@ -1308,23 +1372,60 @@ if __name__ == '__main__':
 **魔法方法**: 指的是python内置的,被双下划线所包围的属性.
 
 ```python
-# 类的属性(包含一个字典,由类的数据属性组成)
-__dict__
+class Persion(object):
+    """ 说明文档 """
+    pass
 
-# 类的文档字符串
-__doc__
 
-# 类名
-__name__
+if __name__ == '__main__':
+    # 类的所有属性(返回字典,由类的数据属性组成)
+    print(Persion.__dict__)
+    """{'__module__': '__main__', '__doc__': ' 说明文档 ', 
+    '__dict__': <attribute '__dict__' of 'Persion' objects>, '__weakref__': <attribute '__weakref__' of 'Persion' objects>}
+    """
+    # 类的说明文档
+    print(Persion.__doc__)  # 说明文档
 
-# 类定义所在的模块
-__module__
+    # 类名
+    print(Persion.__name__)  # Persion
 
-# 类的所有父类构成元素(包含一个由所有父类组成的元组)
-__bases__
+    # 类定义所在的模块
+    print(Persion.__module__)  # __main__
+
+    # 类的父类(返回由所有父类组成的元组)
+    print(Persion.__bases__)  # (<class 'object'>,)
 ```
 
 
+
+
+
+### 单例对象
+
+**单例模式(Singleton Pattern)**是一种常用的软件设计模式, 该模式的主要目的是**确保某一个类只有一个实例存在**.
+
+单例模式就是创建单列对象, 重写object类里面的new方法使之开辟一个内存空间, 所有对象都指向同一内存空间, 使多个对象的引用地址相同; Python的模块导入就是天然的单例模式.
+
+```python
+class Singleton(object):
+    __instance = None
+
+    def __new__(cls, age, name):
+        # 如果类属性__instance 的值为None,那么就创建一个对象,并且赋值为这个对象的引用
+        # 保证下次调用这个方法时,能够知道之前已经创建过对象了,这样就保证了只有1个对象
+        if not cls.__instance:
+            cls.__instance = object.__new__(cls)
+        return cls.__instance
+
+
+if __name__ == '__main__':
+    p1 = Singleton(22, "kk")
+    p2 = Singleton(52, "gg")
+    print(p1)  # <__main__.Singleton object at 0x000002D13E080700>
+    print(p2)  # <__main__.Singleton object at 0x000002D13E080700>
+    print(p1 == p2)  # True
+    print(p1 is p2)  # True
+```
 
 
 
@@ -1333,8 +1434,50 @@ __bases__
 ### 建类模板
 
 ```python
+# -*- coding: utf-8 -*- 
+# @Time : 2021/8/5 18:25
+# @Author : koray
+# @File :  建类模板
 
+
+class Testmd(object):
+
+    def __init__(self, name, age) -> None:
+        self.__name = name
+        self.__age = age
+
+    def __repr__(self) -> str:
+        return "name : %s , age : %s" % (self.__name, self.__age)
+
+    def __getattr__(self, name):
+        return "Can't find the attribute ..."
+
+    @property
+    def age(self):
+        return self.__age
+
+    # 设置属性
+    @age.setter
+    def age(self, age):
+        self.__age = age
+        return self.__age
+
+    @age.getter
+    def age(self):
+        return self.__age
+
+
+if __name__ == '__main__':
+    pass
 ```
+
+
+
+
+
+
+
+
 
 
 
@@ -1423,6 +1566,144 @@ random.random(m,n)
 ```
 
 
+
+
+
+### 常用内置工具包
+
+
+
+#### os模块
+
+> 负责与操作系统的模块
+
+```python
+# os是负责与操作系统的模块
+import os
+
+# 获取当前进程 id
+print("当前进程的 ID：", os.getpid())  # 当前进程的 ID： 9404
+# 获取当前父进程 id
+print("当前父进程的 ID：", os.getppid())  # 当前父进程的 ID： 6904
+# 获取当前所在路径
+print("当前所在路径为：", os.getcwd())  # 当前所在路径为： D:\Code_Repository\python_study\list\new_kn
+# 改变当前工作目录
+os.chdir("./home/")
+print("修改后当前所在路径为：", os.getcwd())  # 修改后当前所在路径为： ./home/
+# 返回当前目录下的所有文件
+print("当前目录下的文件有：", os.listdir(os.getcwd()))  # 当前目录下的文件有： ['class_kn.py', 'create_class_module.py', 'tool.py']
+# 返回当前路径下的所有文件,包括子目录文件;
+for root, dirs, files in os.walk(os.getcwd(), topdown=False):
+    for name in files:
+        print(os.path.join(root, name))
+    for name in dirs:
+        print(os.path.join(root, name))
+        
+        
+''' 文件操作 '''
+# 获取当前工作目录的名称：
+print(os.curdir)
+# 父目录字符串名称
+print(os.pardir)
+# 删除指定文件
+os.remove("../基础知识/abc.py")
+# 删除文件夹
+os.removedirs("./a")
+# 重命名文件, rename(命名前，命名后)
+os.rename("../基础知识/abc.py", "../基础知识/1.py")
+
+
+''' os.path子模块 '''
+# 返回绝对路径
+os.path.abspath("path")
+# 文件存在则返回 True,不存在返回 False
+os.path.exists("path")
+# 返回文件大小，如果文件不存在就返回错误
+os.path.getsize("path")
+# 判断路径是否为文件
+os.path.isfile("path")
+# 判断路径是否为文件夹
+os.path.isdir("path")
+# 拼接路径
+os.path.join("path", "path2")
+```
+
+
+
+#### sys模块
+
+> 负责与解释器交互的模块
+
+```python
+# sys是负责与解释器交互的模块
+import sys
+
+# 当前程序退出,0表示正常退出,其他值表示异常退出
+sys.exit(0)
+# 获取模块导入的搜索路径
+l = sys.path  # 返回是list
+l.append("./Code_Repository/start")  # 添加模块导入的搜索路径
+print(sys.path)
+# 获取当前系统平台
+print(sys.platform)  # win32
+# 从程序外部向程序传递参数,参数以列表的形式传递,第一个为当前文件名
+print(sys.argv[0])  # D:/Code_Repository/python_study/list/new_kn/tool.py
+# 获取当前版本
+print(sys.version)  # 3.8.8 (default, Apr 13 2021, 15:08:03) [MSC v.1916 64 bit (AMD64)]
+# 获取当前编码
+print(sys.getdefaultencoding())  # utf-8
+```
+
+
+
+#### time模块
+
+> 处理时间的模块
+
+```python
+# time是处理时间的模块
+import time
+
+# 获取当前时间戳
+print("时间戳：", time.time())  # 时间戳： 1628245640.3183932
+# 获取当前时间的时间元组
+localtime = time.localtime()
+print("本地时间为 :", localtime)
+''' 本地时间为 : time.struct_time(tm_year=2021, tm_mon=8, tm_mday=6, 
+            tm_hour=18, tm_min=27, tm_sec=20, tm_wday=4, tm_yday=218, tm_isdst=0) '''
+# 获取格式化的时间
+print("本地时间为 :", time.asctime(localtime))  # 本地时间为 : Fri Aug  6 18:27:20 2021
+# 接收当前时间的时间元组,并返回以可读字符串表示的当地时间,格式由参数format决定
+print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))  # 2021-08-06 18:27:20
+```
+
+
+
+#### random模块
+
+> 提供随机函数的模块
+
+```python
+# randmo是提供随机函数的模块
+import random
+
+# 产生1到10的一个整数型随机数
+print(random.randint(1, 10))
+# 产生0到1 之间的随机浮点数
+print(random.random())
+# 产生1.1到 5.4之间的随机浮点数,区间可以不是整数
+print(random.uniform(1.1, 5.4))
+# 从序列中随机选取一个元素
+print(random.choice('tomorrow'))
+# 生成从1到100的间隔为2的随机整数
+print(random.randrange(1, 100, 2))
+# 取三个值
+print(random.sample("python", 3))
+# 洗牌，打乱序列
+n = [1, 2, 3, 4]
+random.shuffle(n)
+print(n)  # [1, 4, 2, 3]
+```
 
 
 
