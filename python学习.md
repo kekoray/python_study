@@ -1483,95 +1483,24 @@ if __name__ == '__main__':
 
 ## 模块
 
-```python
+在python中, 一个py文件就是一个模块, 是最高级别的组织单元.
 
+包是一个目录, 由多个模块组成, 其中必须包含__init__.py文件.
 
- 
-""" 
-在python中,一个py文件就是一个模块,是最高级别的组织单元
-代码复用
-系统命名空间得划分
-实现共享服务和数据
-
-包是一个目录,由多个模块组成,其中必须包含__init__.py文件.
-
-produce
-    __init__.py
-
-
-
-"""
-
-# 模块导入
-
-# import搜索路径顺序
-
-# 查看路径
-sys.path
-
-
-
-# 内置工具包
-
-# os是负责与操作系统的模块
-import os 
-os.getcwd()
-os.chdir("path")
-os.listdir()
-os.walk()
-
-# os.path子模块
-os.path.join("path")
-os.path.abspath("path")
-os.path.exists("path")
-os.path.getsize("path")
-os.path.isfile("path")
-os.path.isdir("path")
-
-
-# sys是负责与解释器交互的模块
-import sys
-sys.exit([n])
-sys.path
-sys.platform
-
-sys.argv[1]
-
-
-# time是处理时间的模块
-import time
-time.time()
-time.localtime()  # time.struct_time(tm_year=2021, tm_mon=7, tm_mday=23, tm_hour=18, tm_min=2, tm_sec=58, tm_wday=4, tm_yday=204, tm_isdst=0)
-time.asctime()
-time.strftime(format="",time.time())
-
-
-# datetime
-import datetime
-datetime.date
-datetime.time
-datetime.datetime
-datetime.timedelta
-
-
-
-# randmo是提供随机函数的模块
-import random
-random.random()
-random.random(m,n)
-
-
-
-
-```
+> pyproject
+> 	|
+> 	|—— __init__.py
+> 	|—— module0..py
+> 	|—— Package_a
+>            |
+>            |—— __init__.py
+>            |—— module0..py
 
 
 
 
 
 ### 常用内置工具包
-
-
 
 #### os模块
 
@@ -1606,11 +1535,11 @@ print(os.curdir)
 # 父目录字符串名称
 print(os.pardir)
 # 删除指定文件
-os.remove("../基础知识/abc.py")
+os.remove("../kn/abc.py")
 # 删除文件夹
 os.removedirs("./a")
 # 重命名文件, rename(命名前，命名后)
-os.rename("../基础知识/abc.py", "../基础知识/1.py")
+os.rename("../kn/abc.py", "../kn/1.py")
 
 
 ''' os.path子模块 '''
