@@ -1859,6 +1859,190 @@ print(*L)  # 1 3 3
 
 
 
+## 异常与调试
+
+
+
+### 异常
+
+#### 异常处理
+
+```python
+try:
+    num = 0
+    result = 1 / num
+except Exception:
+    print("num不能为0")
+finally:
+    print("程序结束..")
+```
+
+
+
+#### 自定义异常
+
+1. 通过继承类Exceptio来实现自定义的异常
+2. 使用raise抛出自定义异常
+
+```python
+# 1.通过继承类Exceptio来实现自定义的异常
+class MyException(Exception):
+
+    def __init__(self, msg=None):
+        self.msg = msg
+
+    def __str__(self):
+        return str(self.msg)
+
+
+def func(age):
+    if 100 > age > 18:
+        return 1
+    else:
+        # 2.使用raise抛出自定义异常
+        raise MyException("未成年不准进入网吧")
+    
+
+if __name__ == '__main__':
+    func(16)  # __main__.MyException: 未成年不准进入网吧
+```
+
+
+
+
+
+### 调试
+
+#### assert断点
+
+assert是python中用于调试的工具.
+
+- 格式 :  `assert (expression..), "抛出错误的自定义信息"`
+
+- 在运行带有assert语句的脚本时, 可通过`-O`参数来屏蔽assert.
+
+```python
+def foo(num):
+    assert type(num) == int, "num 必须为整形"
+    assert num != 0, 'n is zero!'
+    return 10 / num
+foo(0)
+'''
+Traceback (most recent call last):
+  File "E:/python_study/list/new_kn/test.py", line 39, in <module>
+    foo(0)
+  File "E:/python_study/list/new_kn/test.py", line 37, in foo
+    assert num != 0, 'n is zero!'
+AssertionError: n is zero!
+'''
+```
+
+
+
+#### unittest单元测试
+
+unittest是python内置的单元测试框架.
+
+> myPY.py文件
+
+```python
+import re
+
+class CheckUserInfo():
+    def check_pwd_len(self, pwd):
+        """密码长度不超过 8 位"""
+        return len(pwd) >= 8
+
+    def check_pwd_contain_leter(self, pwd):
+        """密码包含大小写英文字母"""
+        flag = False
+        pattern = re.compile('[A-Z][a-z]+')
+        match = pattern.findall(pwd)
+        if match:
+            flag = True
+        return flag
+```
+
+> 测试用例
+
+```python
+from myPY import CheckUserInfo
+import unittest
+
+# 需要继承unittest.TestCase类创建测试用例类
+class CheckUserInfoTestCase(unittest.TestCase):
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.check_user_info = CheckUserInfo()
+
+    # 在所有测试方法执行之前执行
+    @classmethod
+    def setUpClass(cls):
+        print('setUpClass\n\n')
+
+    # 在所有测试方法执行之后执行
+    @classmethod
+    def tearDownClass(cls):
+        print('tearDownClass')
+
+    # 在每个测试方法执行之前执行
+    def setUp(self):
+        print('setUp')
+
+    # 在每个测试方法执行之后执行
+    def tearDown(self):
+        print('tearDown\n')
+
+        
+    # 以test开头的方法,都会独立执行
+    def test_check_pwd_len(self):
+        print('test_check_pwd_len')
+        self.assertEqual(True, self.check_user_info.check_pwd_len('12345678'))
+        self.assertEqual(False, self.check_user_info.check_pwd_len(''))
+        self.assertEqual(False, self.check_user_info.check_pwd_len('1'))
+        self.assertEqual(True, self.check_user_info.check_pwd_len('123456789'))
+
+    def test_check_pwd_contain_letter(self):
+        print('test_check_pwd_contain_leter')
+        self.assertEqual(True, self.check_user_info.check_pwd_contain_leter('1qazXSW@'))
+        self.assertEqual(False, self.check_user_info.check_pwd_contain_leter('12345678'))
+        self.assertEqual(False, self.check_user_info.check_pwd_contain_leter(''))
+
+    def aaa(self):
+        print('test_check_pwd_contain_num')
+        self.assertEqual(True, self.check_user_info.check_pwd_contain_num('1qazXSW@'))
+
+
+if __name__ == '__main__':
+    # 执行测试用例
+    unittest.main()
+"""
+setUpClass
+setUp
+test_check_pwd_contain_leter
+tearDown
+FsetUp
+test_check_pwd_len
+tearDown
+.tearDownClass
+======================================================================
+FAIL: test_check_pwd_contain_letter (__main__.CheckUserInfoTestCase)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "mytest.py", line 33, in test_check_pwd_contain_letter
+    self.assertEqual(True, self.check_user_info.check_pwd_contain_leter('1qazXSW@'))
+AssertionError: True != False
+----------------------------------------------------------------------
+Ran 2 tests in 0.001s
+FAILED (failures=1)
+"""
+```
+
+
+
+
+
 ## 正则表达式
 
 
