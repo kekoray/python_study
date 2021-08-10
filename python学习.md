@@ -1516,7 +1516,7 @@ print("当前进程的 ID：", os.getpid())  # 当前进程的 ID： 9404
 print("当前父进程的 ID：", os.getppid())  # 当前父进程的 ID： 6904
 # 获取当前所在路径
 print("当前所在路径为：", os.getcwd())  # 当前所在路径为： D:\Code_Repository\python_study\list\new_kn
-# 改变当前工作目录
+# 改变当前工作目录,相当于复制文件
 os.chdir("./home/")
 print("修改后当前所在路径为：", os.getcwd())  # 修改后当前所在路径为： ./home/
 # 返回当前目录下的所有文件
@@ -2017,6 +2017,7 @@ class CheckUserInfoTestCase(unittest.TestCase):
 if __name__ == '__main__':
     # 执行测试用例
     unittest.main()
+
 """
 setUpClass
 setUp
@@ -2143,16 +2144,6 @@ print(int(input("请输入整数..")), type(input("随便输入..")))
 
 
 ## 其他API操作
-
-
-
-### 文件目录操作
-
-```python
-import os
-print os.getcwd()  #获取当前的文件目录结构
-os.chdir("xx/xx")  #修改当前的文件目录结构,相当于复制文件
-```
 
 
 
