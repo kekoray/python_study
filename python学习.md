@@ -2619,7 +2619,7 @@ print(b)                        # array([[1, 2, 3], [4, 5, 6]])
 
 ### 数组与矩阵
 
-```
+```python
 matrices必须是2维的,arrays可以是多维
 matrix是array的分支,拥有array的所有特性
 
