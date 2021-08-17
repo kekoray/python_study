@@ -4,24 +4,6 @@
 # @File :
 
 
-class p(object):
-
-    # 可迭代对象,能被for循环遍历的对象
-    # 可迭代对象不是迭代器,但是迭代器是可迭代对象
-    # 迭代器协议: 实现对象的__iter__和__next__方法
-    def __iter__(self):
-        pass
-
-    def __getitem__(self):
-        pass
-
-    # 返回容器的下一个元素
-    def __next__(self):
-        pass
-
-
-if __name__ == '__main__':
-    iter([1, 2])
 
 # 生成器generator,是一类特殊的迭代器,性能上比迭代器好,
 # 可以使用next和send取值,第一次取值时,需要用next
@@ -186,7 +168,6 @@ def func(f):
         f(*args, **kwargs)
         end_time = time.time()
         print('耗时：%s 秒' % (end_time - start_time))
-
     return inner
 
 
@@ -210,9 +191,7 @@ def Decorator(name=None, level="普通会员"):
             else:
                 print("欢迎登陆，%s" % level)
                 func(name)
-
         return inner
-
     return outer
 
 
@@ -251,50 +230,94 @@ class Singleton(object):
 '''  类装饰器  '''
 
 
+# 类方法装饰器与实例方法装饰器的调用方式不同
+
+
 class Tiga(object):
-    def __init__(self, f):
-        self.f = f
+    def __init__(self, func):
+        self.func = func
 
     def __call__(self, *args, **kwargs):
         print("叮~，变身")
-        self.f(*args, **kwargs)
+        self.func(*args, **kwargs)
         print("光之巨人")
 
+    # 实例方法装饰器
     def Red(self, f):
         def wrapper(*args, **kwargs):
             print("切换战士形态：力量+100")
             f(*args, **kwargs)
-
         return wrapper
 
+    # 类方法装饰器
     @classmethod
     def Blue(cls, f):
         def wrapper(*args, **kwargs):
             print("切换刺客形态：敏捷+100")
             f(*args, **kwargs)
-
         return wrapper
 
 
+# 类装饰器调用
 @Tiga
 def func():
     print("化身成为光！")
 
+# 相当于实例化的对象 func = Tiga()
+func()
 
-func()  # 实例化的对象 func = Tiga()
-
-
+# 类方法装饰器的调用格式: @类名.类方法
 @Tiga.Blue
 def fight1():
     print("速度很快，但是没有破防")
 
-
 fight1()
 
 
+# 实例方法装饰器的调用格式: @对象.实例方法
 @func.Red
 def fight2():
     print("使出一记重拳，但是没打中")
 
-
 fight2()
+
+
+# 多个装饰器的使用,先执行距离主函数近的装饰器,依次类推
+def a(func):
+    @wraps(func)
+    def a_inner():
+        func()
+        print("==> 执行a装饰器")
+        pass
+    return a_inner
+
+
+def b(func):
+    @wraps(func)
+    def b_inner():
+        func()
+        print("==> 执行b装饰器")
+        pass
+    return b_inner
+
+
+def c(func):
+    @wraps(func)
+    def c_inner():
+        func()
+        print("==> 执行c装饰器")
+        pass
+    return c_inner
+
+@a
+@b
+@c
+def P():
+    print("执行P函数")
+
+
+P()
+
+# 解除装饰器,使用__wrapped__方法
+p_remove = P.__wrapped__.__wrapped__.__wrapped__
+p_remove()

@@ -2048,31 +2048,403 @@ FAILED (failures=1)
 
 
 
-### 闭包
-
-- 闭包中不可以直接修改外部函数的局部变量
-- 
+### 迭代器
 
 
 
-#### 装饰器
+#### 可迭代对象
 
-- 装饰器本质是一个python函数, 它可以再不改变代码结构的情况下给代码添加新的功能.
-- 装饰器是闭包的一种应用.
-- 装饰器会丢失原有函数的元信息, 可使用 `@warps` 来解决.
-- 解除装饰器功能, 可使用 `函数.__wrapped__` 方法.
-- 装饰器的作用 ------
-- 装饰器不仅可以是函数, 还可以是类; 不仅可以装饰函数, 还可以装饰类.
+可迭代对象, 能被for循环遍历的对象.
 
 ```python
-@装饰器函数
-def func():
-	pass 
+# 1.使用for循环遍历判断
+List = [1, 2, 3]
+str_ = "py3"
+Tuple = (9, 8, 7)
+Dict = {"a": 1, "b": 2, "c": 3}
+Set = {"A", "B", "C"}
+for i in zip(List, str_, Tuple, Dict, Set):
+    print(i)
+
+    
+# 2.使用Iterable方法判断
+from collections.abc import Iterable
+print("list:", isinstance(List, Iterable))  # True
+print("str:", isinstance(str_, Iterable))  # True
+print("tuple:", isinstance(Tuple, Iterable))  # True
+print("dict:", isinstance(Dict, Iterable))  # True
+print("set:", isinstance(Set, Iterable))  # True
+print("num:", isinstance(1, Iterable))  # False
+```
+
+
+
+#### 自定义可迭代对象
+
+实现`__iter__`和`__getitem__`方法.
+
+```python
+class Iter_obj(object):
+    def __init__(self, value):
+        self.value = value
+
+    # 编写迭代逻辑
+    def __iter__(self):
+        self.index = 3
+        return iter(self.value[:self.index])
+
+
+L = Iter_obj([1, 2, 3, 4, 5, 6])
+print(isinstance(L, Iterable))  # True
+for i in L:
+    print(i)  # 只打印到索引为3,因为__iter__限制
+```
+
+
+
+#### 迭代器对象
+
+- 可迭代对象不是迭代器, 但是迭代器是可迭代对象.
+- 迭代器在循环遍历中是不可逆的.
+
+```python
+# 使用Iterable方法判断是否迭代器对象
+from collections.abc import Iterator
+print("list:", isinstance(List, Iterator))      # False
+print("str:", isinstance(str_, Iterator))       # False
+print("tuple:", isinstance(Tuple, Iterator))  	# False
+print("dict:", isinstance(Dict, Iterator))  	# False
+print("set:", isinstance(Set, Iterator))  	  	# False
+print("num:", isinstance(1, Iterator)) 		 	# False
+
+
+# 使用iter()方法将可迭代对象转换为迭代器对象,且迭代器在循环遍历中是不可逆的.
+l = iter([1, 2])
+print(isinstance(l, Iterator))  # True
+next(l)  # 1
+next(l)  # 2
+next(l)  # StopIteration
 ```
 
 
 
 
+
+#### 自定义迭代器对象
+
+实现`__iter__`和`__next__`方法;  其中`__iter__`方法放回迭代器对象本身, next()方法返回容器的下一个元素,在没有后续元素时抛出StopIteration异常.
+
+```python
+class IterObj(object):
+    def __init__(self, value):
+        self.value = value
+        self.i = 0
+
+    def __iter__(self):
+        return iter(self.value)
+
+    # 编写迭代逻辑
+    def __next__(self):
+        while self.i < len(self.value):
+            v = self.value[self.i]
+            self.i += 1
+            return v
+        # 此处可以增加StopIteration异常提示
+        print("StopIteration...")
+
+
+ite = IterObj([1, 2, 3, 4, 5])
+print(isinstance(ite, Iterable))  # True
+next(ite)
+```
+
+
+
+
+
+### 生成器
+
+生成器generator, 是一类特殊的迭代器, 性能上比迭代器好.
+
+生成器可使用next和send取值,
+
+- next, 获取下一个元素.
+- send, 获取下一个元素, 同时可以向生成器重传递一个值.
+- 第一次取值时, 必须使用next或者send(None).
+
+```python
+# 1.推导式创建生成器,元组不具备推导式生成,故创建的都是生成器对象
+g = (x * 2 for x in range(5))
+next(g)
+g.send("取值成功")
+
+
+# 2.使用yield创建生成器,每次会在yield的地方暂停并重新进入while,直到循环完毕了才执行return
+def fib(n):
+    current = 0
+    num1, num2 = 0, 1
+    while current < n:
+        num = num1
+        num1, num2 = num2, num1 + num2
+        current += 1
+        yield num
+    return 'done'
+
+g = fib(5)
+
+while True:
+    try:
+        x = next(g)
+        print("value:%d" % x)
+    except StopIteration as e:
+        print("生成器返回值:%s" % e.value)
+        break
+'''
+value:0
+value:1
+value:1
+value:2
+value:3
+生成器返回值:done
+'''
+```
+
+
+
+
+
+### 装饰器
+
+
+
+#### 闭包
+
+- 在一个内部函数中，对外部作用域的变量进行引用, 且一般外部函数的返回值为内部函数, 那么内部函数就被认为是闭包.
+- 闭包中不可以直接修改外部函数的局部变量(可变类型除外), 需使用关键字`nonlocal`.
+- 装饰器是闭包的一种应用.
+
+```python
+''' 
+在函数func中定义了一个inner函数,inner访问了外部函数func的变量,并且函数返回值为inner函数  
+'''
+def func(x):
+    z = 0
+    def inner(y):
+    	z = 2
+        return x + y
+    print(z) # 还是0,修改不了z变量
+    return inner
+```
+
+
+
+
+
+#### 装饰器创建
+
+- 装饰器本质是一个python函数, 它可以再不改变代码结构的情况下给代码添加新的功能.
+- 装饰器多用于有切面需求的场景, 比如插入日志、性能测试、事务处理、缓存、权限校验等.
+- 装饰器的工作过程: 将被装饰的函数当作参数传递给装饰器函数, 并返回装饰后被装饰的函数.
+- 装饰器会丢失原有函数的元信息, 可使用 `@warps` 来解决.
+- 解除装饰器功能, 可使用 `函数.__wrapped__` 方法.
+- 装饰器其实就是两个嵌套函数返回内部函数.
+
+```python
+# 导包
+from functools import wraps
+
+
+# 定义装饰器函数
+def Decorator(func):
+    @wraps(func)   # 防止装饰器导致元信息丢失,且有解除装饰器功能
+    def inner(*args, **kwargs):  # 通用的装饰器参数
+        '''装饰器功能逻辑编写...'''
+        func(*args, **kwargs)
+    return inner
+
+
+# 定义被装饰函数
+@Decorator
+def func():
+    pass
+
+# 解除装饰器
+func.__wrapped__()
+```
+
+
+
+#### 外参的装饰器
+
+```python
+# 定义装饰器函数
+def Decorator(name=None, level="普通会员"):
+    def outer(func):
+        def inner(name):
+            if level == "SVIP":
+                print("欢迎登陆尊贵的%s用户,过期时间还有1年" % level)
+                func(name)
+            else:
+                print("欢迎登陆，%s" % level)
+                func(name)
+        return inner
+    return outer
+
+# 定义被装饰函数,并外部传参
+@Decorator(level="SVIP")
+def func(name):
+    print(name)
+
+
+func("张三")
+'''
+欢迎登陆尊贵的SVIP用户,过期时间还有1年
+张三
+'''
+```
+
+
+
+
+
+#### 装饰器装饰类
+
+典型的单例对象创建.
+
+```python
+# 单例对象装饰器逻辑
+def singleton(cls, *args, **kw):
+    instance = {}
+    def _singleton():
+        if cls not in instance:
+            instance[cls] = cls(*args, **kw)
+            return instance[cls]
+    return _singleton
+
+
+@singleton
+class Singleton(object):
+    def __init__(self):
+        self.num_sum = 0
+
+    def add(self):
+        self.num_sum = 100
+```
+
+
+
+
+
+#### 类装饰器创建
+
+类方法装饰器与实例方法装饰器的调用方式不同.
+
+```python
+class Tiga(object):
+    
+    # 类装饰初始化参数为函数
+    def __init__(self, func):
+        self.func = func
+
+    # 定义__call__方法, 让类像方法一样被调用.
+    def __call__(self, *args, **kwargs):
+        print("叮~，变身")
+        self.func(*args, **kwargs)
+        print("光之巨人")
+
+    # 实例方法装饰器
+    def Red(self, f):
+        def wrapper(*args, **kwargs):
+            print("切换战士形态：力量+100")
+            f(*args, **kwargs)
+        return wrapper
+
+    # 类方法装饰器
+    @classmethod
+    def Blue(cls, f):
+        def wrapper(*args, **kwargs):
+            print("切换刺客形态：敏捷+100")
+            f(*args, **kwargs)
+        return wrapper
+
+    
+# 类装饰器调用
+@Tiga
+def func():
+    print("化身成为光！")
+
+# 相当于实例化的对象 func = Tiga()
+func()
+
+
+# 类方法装饰器的调用格式: @类名.类方法
+@Tiga.Blue
+def fight1():
+    print("速度很快，但是没有破防")
+fight1()
+
+
+# 实例方法装饰器的调用格式: @对象.实例方法
+@func.Red
+def fight2():
+    print("使出一记重拳，但是没打中")
+fight2()
+```
+
+
+
+
+
+#### 多装饰器使用
+
+多个装饰器的使用, 先执行距离主函数近的装饰器, 依次类推.
+
+```python
+from functools import wraps
+
+def a(func):
+    @wraps(func)
+    def a_inner():
+        func()
+        print("==> 执行a装饰器")
+        pass
+    return a_inner
+
+def b(func):
+    @wraps(func)
+    def b_inner():
+        func()
+        print("==> 执行b装饰器")
+        pass
+    return b_inner
+
+def c(func):
+    @wraps(func)
+    def c_inner():
+        func()
+        print("==> 执行c装饰器")
+        pass
+    return c_inner
+
+
+@a
+@b
+@c
+def P():
+    print("执行P函数")
+    
+P()
+'''
+执行P函数
+==> 执行c装饰器
+==> 执行b装饰器
+==> 执行a装饰器
+'''
+
+# 解除装饰器,使用__wrapped__方法
+p_remove = P.__wrapped__.__wrapped__.__wrapped__
+p_remove()
+```
 
 
 
@@ -2084,53 +2456,152 @@ def func():
 
 
 
+### re模块
+
+re模块中通过给定的匹配规则, 匹配文本中符合规则的字符并进行操作.
+
+```python
+# 导包
+import re
+
+# 匹配以给定条件开头的字符串,失败返回none,通过调用group()方法得到匹配的字符串
+re.match("www", "www.koray2021.ml").group()   # www
+re.match("www", "www.koray2021.ml").span()    # 匹配到的区间下标  ==>  (0, 3)
 
 
-### 特殊符号
+# 扫描整个字符串并返回第一个成功的匹配,通过调用group()方法得到匹配的字符串
+re.search("www", "yuiwwwyuiswww.ml")
+re.search("www", "yuiwwwyuiswww.ml").group()  # www
+re.search("www", "yuiwwwyuiswww.ml").span()   # (3, 6)
 
-| 表示法 | 描述 | 匹配的表达式 | 结果 |
-| ------ | ---- | ------------ | ---- |
-|        |      |              |      |
-|        |      |              |      |
-|        |      |              |      |
-|        |      |              |      |
-|        |      |              |      |
-|        |      |              |      |
+# 查找所有的符合条件的文本
+re.findall("w", "adjawadjw79w")  			  # ['w', 'w', 'w']
 
+# 字符串替换
+re.sub(r"\d+", "101", "abc = 22")  			  # abc = 101
 
+# 字符串切割
+re.split("\.", "www.koray2021.ml")  		  # ['www', 'koray2021', 'ml']
 
-### 字符
-
-| 表示法 | 描述 |
-| ------ | ---- |
-|        |      |
-|        |      |
-|        |      |
-|        |      |
-
-
-
-
-
-
-
-#### 常见的正则表达式
-
-|      |      |      |
-| ---- | ---- | ---- |
-|      |      |      |
-|      |      |      |
-|      |      |      |
+# 编译正则表达式,获得一个正则表达式对象,即提前写好正则规则
+pattem = re.compile("\.")
+pattem.split("www.koray2021.ml")  			  # ['www', 'koray2021', 'ml']
+pattem.search("www.koray2021.ml").group()
+```
 
 
 
-#### 注意事项
+### 正则表达式模式
 
-- 原始字符串
+| 实例        | 描述                                                         |
+| ----------- | ------------------------------------------------------------ |
+| [Pp]ython   | 匹配 "Python" 或 "python"                                    |
+| rub[ye]     | 匹配 "ruby" 或 "rube"                                        |
+| [aeiou]     | 匹配中括号内的任意一个字母                                   |
+| [0-9]       | 匹配任何数字. 类似于 [0123456789]                            |
+| [a-z]       | 匹配任何小写字母                                             |
+| [A-Z]       | 匹配任何大写字母                                             |
+| [a-zA-Z0-9] | 匹配任何字母及数字                                           |
+| [^aeiou]    | 除了aeiou字母以外的所有字符                                  |
+| [^0-9]      | 匹配除了数字外的字符                                         |
+| .           | 匹配除 "\n" 之外的任何单个字符.                              |
+| \d          | 匹配一个数字字符. 等价于 [0-9].                              |
+| \D          | 匹配一个非数字字符. 等价于 \[^0-9].                          |
+| \s          | 匹配任何空白字符，包括空格、制表符、换页符等等. 等价于 [ \f\n\r\t\v]. |
+| \S          | 匹配任何非空白字符. 等价于 \[^ \f\n\r\t\v].                  |
+| \w          | 匹配包括下划线的任何单词字符. 等价于'[A-Za-z0-9_]'.          |
+| \W          | 匹配任何非单词字符. 等价于 '\[^A-Za-z0-9_]'.                 |
+
+```python
+# 使用\d (小写)匹配数字
+re.findall(r'\d+', "qeqw123ytu3792")  # ['123', '3792']
+# 使用\D (大写)匹配任意的非数字字符
+re.findall(r'\D+', "qeqw123ytu你好世界")  # ['qeqw', 'ytu你好世界']
+
+# 使用\w (小写)匹配数字字母下划线
+re.findall(r'\w+', "qeqw~.;[ps]\=|123ytuc 你好世界37adw_ee43")  # ['qeqw', 'ps', '123ytuc', '你好世界37adw_ee43']
+# 使用\W (大写)匹配非数字字母下划线
+re.findall(r'\W+', "qeqw~.;[ps]\=|123ytuc 你好世界37adw_ee43")  # ['~.;[', ']\\=|', ' ']
+
+# 使用\s (小写)匹配任意空白字符
+re.findall(r'\s+', "qeqw123ytu37 92_adw_ee43")
+# 使用\S (大写)匹配任意非空字符
+re.findall(r'\S+', "qeqw123ytu37 92_adw_ee43")  # ['qeqw123ytu37', '92_adw_ee43']
+
+# 只匹配数字,使用[]指定匹配元素的范围, {}指定匹配次数
+re.findall(r'[0-9]{1,3}', "qeqw123ytu3792")  # ['123', '379', '2']
+# 只匹配英文字母
+re.findall(r'[A-Za-z]+', "qeqw123ytu你好世界37 92_adw_ee43")  # ['qeqw', 'ytu', 'adw', 'ee']
+# 只匹配中文, \u4e00和\u9fa5 两个unicode值正好是Unicode表中的汉字的头和尾.
+re.findall(r'[\u4e00-\u9fa5]{1,}', "qeqw123ytu你好世界37 92_adw_ee43")  # ['你好世界']
+```
 
 
 
+### 贪婪模式与赖惰模式
 
+- 尝试匹配尽可能多的字符模式就是贪婪模式
+
+- 尝试匹配尽可能少的字符模式就是非贪婪模式, 需要在表达式的`"*","?","+","{m,n}"`后面加上`?`实现非贪婪模式.
+
+```python
+# 贪婪模式下的匹配
+# 尝试匹配尽可能多的字符
+html = "aa<div>test1</div>bb<div>test2</div>cc "
+re.search("<div>.*</div>", html).group()  # '<div>test1</div>bb<div>test2</div>'
+
+# 非贪婪模式下的匹配
+# 尝试匹配尽可能少的字符,需要在表达式的"*","?","+","{m,n}"后面加上?实现非贪婪模式
+html = "aa<div>test1</div>bb<div>test2</div>cc "
+re.search("<div>.*?</div>", html).group()  # '<div>test1</div>'
+```
+
+
+
+### 正则表达式修饰符
+
+正则表达式可以包含一些可选标志修饰符来控制匹配的模式, 修饰符被指定为一个可选的标志.
+
+| 修饰符 | 描述                                                         |
+| ------ | ------------------------------------------------------------ |
+| re.I   | 使匹配对大小写不敏感                                         |
+| re.L   | 做本地化识别（locale-aware）匹配                             |
+| re.M   | 多行匹配，影响 ^ 和 $                                        |
+| re.S   | 使 . 匹配包括换行在内的所有字符                              |
+| re.U   | 根据Unicode字符集解析字符. 这个标志影响 \w, \W, \b, \B.      |
+| re.X   | 该标志通过给予你更灵活的格式以便你将正则表达式写得更易于理解. |
+
+```python
+# re.I对大小写不敏感
+s = re.match("life is short", "Life is short, you need Python", flags=re.I).group()  
+print(s)  # Life is short
+```
+
+
+
+### 正则表达式常用用法
+
+```python
+# 匹配文本信息中的邮箱信息
+re.findall(r'[A-Za-z0-9]+@[A-Za-z0-9]+\.com', "我的邮箱是 python996@icu.com")
+
+# 匹配网址URL
+re.findall(r'[a-zA-z]+://[^\s]*', "我的个人主页：https://www.python.org")
+
+# 匹配身份证号码
+s = re.findall(r'(\d{6})(\d{4})(\d{2})(\d{2})(\d{3})([0-9]|X)', "假的身份证:12345678901234567X")
+print(s)  # [('123456', '7890', '12', '34', '567', 'X')]
+print("".join(s[0]))  # '12345678901234567X'
+
+# 匹配手机号码
+re.findall(r'\d{3}\d{8}|\d{4}\{7,8}', "假的手机:13012345678")
+
+# 匹配日期格式
+re.findall(r'\d{4}-\d{1,2}-\d{1,2}', "日期是2021-02-22")
+
+# IP地址
+re.findall(r'\d{3}\.\d{3}\.\d{3}\.\d{3}', "IP地址为192.168.100.140")
+```
 
 
 
@@ -2626,7 +3097,7 @@ matrix是array的分支,拥有array的所有特性
 如果两个可以通用，那就选择array，因为array更灵活，速度更快;
 arrays可以使用简单运算做元素相乘,而矩阵相乘,则需要numpy里面的dot命令
 
-运算符的作用也不一样 ：因为a是个matrix，所以a**2返回的是a*a，相当于矩阵相乘。而c是array，c**2相当于，c中的元素逐个求平方
+运算符的作用也不一样 ：因为a是个matrix，所以a**2返回的是a*a，相当于矩阵相乘. 而c是array，c**2相当于，c中的元素逐个求平方
 两条命令轻松的实现两者之间的转换：np.asmatrix和np.asarray
 numpy 中的array与numpy中的matrix的最大的不同是，在做归约运算时，array的维数会发生变化，但matrix总是保持为2维
 ```
