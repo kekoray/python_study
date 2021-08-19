@@ -1538,7 +1538,7 @@ print(os.pardir)
 os.remove("../kn/abc.py")
 # 删除文件夹
 os.removedirs("./a")
-# 重命名文件, rename(命名前，命名后)
+# 重命名文件, rename(命名前, 命名后)
 os.rename("../kn/abc.py", "../kn/1.py")
 
 
@@ -1547,7 +1547,7 @@ os.rename("../kn/abc.py", "../kn/1.py")
 os.path.abspath("path")
 # 文件存在则返回 True,不存在返回 False
 os.path.exists("path")
-# 返回文件大小，如果文件不存在就返回错误
+# 返回文件大小, 如果文件不存在就返回错误
 os.path.getsize("path")
 # 判断路径是否为文件
 os.path.isfile("path")
@@ -1628,7 +1628,7 @@ print(random.choice('tomorrow'))
 print(random.randrange(1, 100, 2))
 # 取三个值
 print(random.sample("python", 3))
-# 洗牌，打乱序列
+# 洗牌, 打乱序列
 n = [1, 2, 3, 4]
 random.shuffle(n)
 print(n)  # [1, 4, 2, 3]
@@ -2219,7 +2219,7 @@ value:3
 
 #### 闭包
 
-- 在一个内部函数中，对外部作用域的变量进行引用, 且一般外部函数的返回值为内部函数, 那么内部函数就被认为是闭包.
+- 在一个内部函数中, 对外部作用域的变量进行引用, 且一般外部函数的返回值为内部函数, 那么内部函数就被认为是闭包.
 - 闭包中不可以直接修改外部函数的局部变量(可变类型除外), 需使用关键字`nonlocal`.
 - 装饰器是闭包的一种应用.
 
@@ -2285,7 +2285,7 @@ def Decorator(name=None, level="普通会员"):
                 print("欢迎登陆尊贵的%s用户,过期时间还有1年" % level)
                 func(name)
             else:
-                print("欢迎登陆，%s" % level)
+                print("欢迎登陆, %s" % level)
                 func(name)
         return inner
     return outer
@@ -2348,7 +2348,7 @@ class Tiga(object):
 
     # 定义__call__方法, 让类像方法一样被调用.
     def __call__(self, *args, **kwargs):
-        print("叮~，变身")
+        print("叮~, 变身")
         self.func(*args, **kwargs)
         print("光之巨人")
 
@@ -2380,14 +2380,14 @@ func()
 # 类方法装饰器的调用格式: @类名.类方法
 @Tiga.Blue
 def fight1():
-    print("速度很快，但是没有破防")
+    print("速度很快, 但是没有破防")
 fight1()
 
 
 # 实例方法装饰器的调用格式: @对象.实例方法
 @func.Red
 def fight2():
-    print("使出一记重拳，但是没打中")
+    print("使出一记重拳, 但是没打中")
 fight2()
 ```
 
@@ -2507,7 +2507,7 @@ pattem.search("www.koray2021.ml").group()
 | .           | 匹配除 "\n" 之外的任何单个字符.                              |
 | \d          | 匹配一个数字字符. 等价于 [0-9].                              |
 | \D          | 匹配一个非数字字符. 等价于 \[^0-9].                          |
-| \s          | 匹配任何空白字符，包括空格、制表符、换页符等等. 等价于 [ \f\n\r\t\v]. |
+| \s          | 匹配任何空白字符, 包括空格、制表符、换页符等等. 等价于 [ \f\n\r\t\v]. |
 | \S          | 匹配任何非空白字符. 等价于 \[^ \f\n\r\t\v].                  |
 | \w          | 匹配包括下划线的任何单词字符. 等价于'[A-Za-z0-9_]'.          |
 | \W          | 匹配任何非单词字符. 等价于 '\[^A-Za-z0-9_]'.                 |
@@ -2566,7 +2566,7 @@ re.search("<div>.*?</div>", html).group()  # '<div>test1</div>'
 | ------ | ------------------------------------------------------------ |
 | re.I   | 使匹配对大小写不敏感                                         |
 | re.L   | 做本地化识别（locale-aware）匹配                             |
-| re.M   | 多行匹配，影响 ^ 和 $                                        |
+| re.M   | 多行匹配, 影响 ^ 和 $                                        |
 | re.S   | 使 . 匹配包括换行在内的所有字符                              |
 | re.U   | 根据Unicode字符集解析字符. 这个标志影响 \w, \W, \b, \B.      |
 | re.X   | 该标志通过给予你更灵活的格式以便你将正则表达式写得更易于理解. |
@@ -3094,12 +3094,12 @@ print(b)                        # array([[1, 2, 3], [4, 5, 6]])
 matrices必须是2维的,arrays可以是多维
 matrix是array的分支,拥有array的所有特性
 
-如果两个可以通用，那就选择array，因为array更灵活，速度更快;
+如果两个可以通用, 那就选择array, 因为array更灵活, 速度更快;
 arrays可以使用简单运算做元素相乘,而矩阵相乘,则需要numpy里面的dot命令
 
-运算符的作用也不一样 ：因为a是个matrix，所以a**2返回的是a*a，相当于矩阵相乘. 而c是array，c**2相当于，c中的元素逐个求平方
+运算符的作用也不一样 ：因为a是个matrix, 所以a**2返回的是a*a, 相当于矩阵相乘. 而c是array, c**2相当于, c中的元素逐个求平方
 两条命令轻松的实现两者之间的转换：np.asmatrix和np.asarray
-numpy 中的array与numpy中的matrix的最大的不同是，在做归约运算时，array的维数会发生变化，但matrix总是保持为2维
+numpy 中的array与numpy中的matrix的最大的不同是, 在做归约运算时, array的维数会发生变化, 但matrix总是保持为2维
 ```
 
 
@@ -3165,4 +3165,302 @@ np.random.shuffle(a)  # array([0, 2, 1, 3, 4])
 # 返回随机序列
 np.random.permutation([1, 2, 3, 4])  # array([2, 1, 4, 3])
 ```
+
+
+
+
+
+
+
+## Matplotlib数据可视化库
+
+
+
+
+
+
+
+### 1.导包
+
+```python
+# Matplotlib绘图包
+import matplotlib.pyplot as plt
+
+# 3D绘图包
+from mpl_toolkits.mplot3d import  Axes3D
+
+# 解决中文不显示问题
+from pylab import mpl
+mpl.rcParams['font.sans-serif'] = ['SimHei']
+```
+
+
+
+
+
+### 2.创建画布
+
+在绘图结构中, Figure创建画布, Subplot创建子图.
+
+- Figure：面板(画布), matplotlib中所有图像都位于figure对象中, 一个图像只能有一个figure对象.
+- Subplot：子图, figure对象下创建一个或多个subplot对象(即axes)用于绘制图像.
+  - matplotlib.pyplot.subplot(*args，**kwargs) , `*args`是三个独立整数(画布行数, 画布列数, 选中号), 用于描述子图的位置.
+
+```python
+# 创建一个8x6大小的图像,dpi=80表示分辨率每英尺80点
+plt.figure(figsize=(8, 6), dpi=80)
+
+# 设置画布背景
+plt.style.use("seaborn-whitegrid")
+
+# 数据源
+x = np.arange(0, 3 * np.pi, 0.1)
+y_sin = np.sin(x)
+y_cos = np.cos(x)
+
+# 将画布分为2行1列两个子图,选中第1个子图做数据配置
+plt.subplot(2, 1, 1)
+plt.plot(x, y_sin)
+plt.title('Sine')
+
+# 选中第2个子图做数据配置
+plt.subplot(212)
+plt.plot(x, y_cos)
+plt.title('Cosine')
+plt.show()
+```
+
+
+
+#### 画布背景
+
+- 暗网格(seaborn-darkgrid)
+- 白网格(seaborn-whitegrid)
+- 全黑(seaborn-dark)
+- 全白(seaborn-white)
+- 全刻度(seaborn-ticks)
+
+```python
+plt.style.use("seaborn-white")
+```
+
+
+
+
+
+### 3.选择图表
+
+| 图形       | 对应函数      |
+| ---------- | ------------- |
+| 折线图     | plt.plot()    |
+| 条形图     | plt.bar()     |
+| 横向条形图 | plt.barh()    |
+| 直方图     | plt.hist()    |
+| 散点图     | plt.scatter() |
+| 饼图       | plt.pie()     |
+| 箱线图     | plt.boxplot() |
+
+```python
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+### 4.设置图表细节
+
+> 图表函数中的参数大致都通用.
+
+
+
+#### 坐标轴样式
+
+> plt.xlim()显示的是x轴的作图范围, 而plt.xticks()表达的是x轴的刻度内容的范围.
+
+```python
+# ====================  范围设置  =======================
+# 设置x轴范围
+plt.xlim(-4.0, 4.0)  
+# 设置y轴范围
+plt.ylim(-1.0, 1.0)  
+
+
+# ====================  刻度设置  =======================
+# 设置x轴刻度以及对应的刻度标签
+plt.xticks(np.linspace(-4, 4, 3, endpoint=True),['优秀', '不错', '666'])  
+# 设置y轴刻度
+plt.yticks(np.linspace(-1, 1, 3, endpoint=True))  
+
+
+# ====================  轴标签名设置  =======================
+# 设置x轴的标签名
+plt.xlabel('x')
+# 设置y轴的标签名
+plt.ylabel('y')
+# 设置图表的标签名
+plt.title('t')
+```
+
+
+
+#### 图例
+
+> 配合图表函数中定义的`label`参数使用.
+
+| 图例标签位置 | 数值 |
+| ------------ | ---- |
+| best  (默认) | 0    |
+| upper right  | 1    |
+| upper left   | 2    |
+| lower left   | 3    |
+| lower right  | 4    |
+| right        | 5    |
+| center left  | 6    |
+| center right | 7    |
+| lower center | 8    |
+| upper center | 9    |
+| center       | 10   |
+
+```python
+# 调用legend方法使图表函数中定义的label生效,label设置图例标签名称
+plt.plot(x, s, color="green", linewidth=1.0, label="Green", linestyle="-.")
+
+# ncol设置图例显示列数,loc设置位置,fontsize设置字体大小,title设置图例标题
+plt.legend(ncol = 1, loc = 2, fontsize = 20, title = '图例标题)
+```
+
+
+
+#### 网格样式
+
+```python
+# axis='both'/'x'/'y'表示只显示横线和竖线/竖线/横线
+plt.grid(axis='both',linestyle="--", alpha=0.5)
+```
+
+
+
+#### 颜色样式
+
+| 颜色   | 别名 | HTML颜色名 |
+| ------ | ---- | ---------- |
+| 蓝色   | b    | blue       |
+| 红色   | r    | red        |
+| 绿色   | g    | green      |
+| 黄色   | y    | yellow     |
+| 青色   | c    | cyan       |
+| 黑色   | k    | black      |
+| 白色   | w    | white      |
+| 洋红色 | m    | magenta    |
+
+```python
+# 设置颜色
+color = 'r'
+
+# 设置透明度
+alpha = 0.5
+```
+
+
+
+#### 线条样式
+
+| 线条风格      | 描述       |
+| ------------- | ---------- |
+| '-'           | 实线       |
+| ':'           | 虚线       |
+| '--'          | 破折线     |
+| '-.'          | 点划线     |
+| 'steps'       | 阶梯线     |
+| 'None' / ', ' | 什么都不画 |
+
+```python
+# 设置线型
+linestyle = '--'
+ls = '--'
+
+# 设置线宽
+linewidth = 5
+lw = 5
+```
+
+
+
+#### 数据点样式
+
+| 标记 | 描述    |
+| ---- | ------- |
+| '.'  | 点      |
+| '*'  | 星号    |
+| '+'  | 加号    |
+| ','  | 像素    |
+| 'x'  | X       |
+| 'o'  | 圆圈    |
+| 'D'  | 菱形    |
+| 'd'  | 小菱形  |
+| 's'  | 正方形  |
+| 'p'  | 五边形  |
+| 'h'  | 六边形1 |
+| 'H'  | 六边形2 |
+| '8'  | 八边形  |
+
+```python
+# 设置数据点样式
+marker = 's'
+
+# 设置数据点大小
+markersize = 10 
+```
+
+
+
+
+
+
+
+### 5.保存与展示
+
+```python
+# 保存图形
+plt.savefig("数据图形.png",dpi = 100)
+
+# 展示图形
+plt.show()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
