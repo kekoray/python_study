@@ -2774,7 +2774,7 @@ if __name__ == "__main__":
 
 
 
-## Numpy
+## Numpy科学计算库
 
 
 
@@ -3170,13 +3170,48 @@ np.random.permutation([1, 2, 3, 4])  # array([2, 1, 4, 3])
 
 
 
+## Pands数据分析库
+
+
+
+
+
+### 数据读取
+
+
+
+
+
+### 数据结构
+
+- Series
+- DataFrame
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## Matplotlib数据可视化库
-
-
-
-
 
 
 
@@ -3202,46 +3237,39 @@ mpl.rcParams['font.sans-serif'] = ['SimHei']
 
 在绘图结构中, Figure创建画布, Subplot创建子图.
 
-- Figure：面板(画布), matplotlib中所有图像都位于figure对象中, 一个图像只能有一个figure对象.
-- Subplot：子图, figure对象下创建一个或多个subplot对象(即axes)用于绘制图像.
+- Figure: 面板(画布), matplotlib中所有图像都位于figure对象中, 一个图像只能有一个figure对象.
+- Subplot: 子图, figure对象下创建一个或多个subplot对象(即axes)用于绘制图像.
   - matplotlib.pyplot.subplot(*args，**kwargs) , `*args`是三个独立整数(画布行数, 画布列数, 选中号), 用于描述子图的位置.
 
 ```python
-# 创建一个8x6大小的图像,dpi=80表示分辨率每英尺80点
+# 1.创建一个8x6大小的图像,dpi=80表示分辨率每英尺80点
 plt.figure(figsize=(8, 6), dpi=80)
 
-# 设置画布背景
+# 2.设置画布背景,有5种主题选择
+'''
+暗网格(seaborn-darkgrid)
+白网格(seaborn-whitegrid)
+全黑(seaborn-dark)
+全白(seaborn-white)
+全刻度(seaborn-ticks)
+'''
 plt.style.use("seaborn-whitegrid")
 
-# 数据源
+# 3.数据源
 x = np.arange(0, 3 * np.pi, 0.1)
 y_sin = np.sin(x)
 y_cos = np.cos(x)
 
-# 将画布分为2行1列两个子图,选中第1个子图做数据配置
+# 4.将画布分为2行1列两个子图,选中第1个子图做数据配置
 plt.subplot(2, 1, 1)
 plt.plot(x, y_sin)
 plt.title('Sine')
 
-# 选中第2个子图做数据配置
+# 5.选中第2个子图做数据配置
 plt.subplot(212)
 plt.plot(x, y_cos)
 plt.title('Cosine')
 plt.show()
-```
-
-
-
-#### 画布背景
-
-- 暗网格(seaborn-darkgrid)
-- 白网格(seaborn-whitegrid)
-- 全黑(seaborn-dark)
-- 全白(seaborn-white)
-- 全刻度(seaborn-ticks)
-
-```python
-plt.style.use("seaborn-white")
 ```
 
 
@@ -3261,17 +3289,41 @@ plt.style.use("seaborn-white")
 | 箱线图     | plt.boxplot() |
 
 ```python
+# ====================  折线图  =======================
+plt.figure(dpi=100)
+x=np.linspace(0,20,10)
+plt.plot(x, color="blue", linewidth=1, label="Blue", linestyle="--")
+plt.show()
 
 
+# ====================  散点图  =======================
+a = np.random.randint(0, 20, 15)
+b = np.random.randint(0, 20, 15)
+plt.figure(dpi=100)
+plt.scatter(a, b) 
+plt.show()
 
 
+# ====================  条形图  =======================
+level = ['优秀', '不错', '666']
+x = range(len(level))
+y = [1, 3, 2]
+plt.figure(dpi=100)
+plt.bar(x, y, width=0.5, color=['b', 'r', 'g'])
+plt.xticks(x, level)
+plt.grid(linestyle="--", alpha=0.5)
+plt.show()
 
 
+# ====================  直方图  =======================
+t = np.random.randint(0, 30, 90)
+plt.figure(dpi=100)
+distance = 2  # 设置组距
+group_num = int((max(t) - min(t)) / distance)  # 计算组数
+plt.hist(t, facecolor="blue", edgecolor="black", alpha=0.7)
+plt.xticks(range(min(t), max(t))[::2])
+plt.show()
 ```
-
-
-
-
 
 
 
@@ -3279,7 +3331,7 @@ plt.style.use("seaborn-white")
 
 ### 4.设置图表细节
 
-> 图表函数中的参数大致都通用.
+**图表函数中的参数大致都通用.**
 
 
 
@@ -3426,8 +3478,6 @@ markersize = 10
 
 
 
-
-
 ### 5.保存与展示
 
 ```python
@@ -3444,6 +3494,13 @@ plt.show()
 
 
 
+### Seaborn
+
+Seaborn是一种基于matplotlib的图形可视化工具, 在此基础上进行了更高级的API封装.
+
+
+
+> 保留项目
 
 
 
@@ -3455,12 +3512,7 @@ plt.show()
 
 
 
-
-
-
-
-
-
+## Requests请求库
 
 
 
