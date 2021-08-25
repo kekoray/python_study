@@ -3914,5 +3914,85 @@ Seaborn是一种基于matplotlib的图形可视化工具, 在此基础上进行�
 
 ## Requests请求库
 
+Requests是python的一个HTTP请求库, 基于python中的urllib模块实现.
+
+
+
+
+
+
+
+
+
+### 请求方式
+
+| 请求方式              |
+| --------------------- |
+| requests.get(url)     |
+| requests.post(url)    |
+| requests.put(url)     |
+| requests.delete(url)  |
+| requests.head(url)    |
+| requests.options(url) |
+
+```python
+# ====================  参数设置  =======================
+# 请求URL
+url = 'https://fanyi.baidu.com'
+# 请求参数,
+data = {'from': 'zh',
+        'to': 'en',
+        'query': '人生苦短'}
+# 请求头
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36', }
+# 代理ip
+proxies = {"http": "http://100.10.1.10:3128", "https": "http://100.10.1.10:1080"}
+
+
+# ====================  get请求  =======================
+response1 = requests.get(url,  					# 请求url
+                        params=data,  			# 请求参数
+                        headers=headers,  		# 请求头
+                        proxies=proxies,  		# 代理ip
+                        timeout=5,  			# 超时参数
+                        verify=True, 			# 避免ssl证书问题
+                        )
+
+
+# ====================  post请求  =======================
+response2 = requests.post(url,
+                         data=data,
+                         headers=headers,
+                         proxies=proxies,
+                         )
+```
+
+
+
+
+
+
+
+#### get与post的区别总结
+
+- http的method字段不同
+- post可以附加body，可以支持form、json、 xml、binary等各种数据格式
+- 无状态变化的建议使用get请求, 如请求多次结果一致,不涉及信息修改.
+- 数据的写入与状态修改建议用post.
+
+
+
+
+
+
+
+### response对象
+
+```
+
+```
+
+
+
 
 
