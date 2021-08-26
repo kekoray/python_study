@@ -2,9 +2,51 @@
 
 
 
+## Py2与Py3的区别
+
+
+
+### 1. 默认的编码不同
+
+py2默认编码为ascii, py3默认编码为utf-8
+
+故py2使用中文时,需要在py文件第一行注释  `# -*- coding: utf-8 -`
+
+```python
+# -*- coding: utf-8 -*- 
+# @Time : 2021/8/24 11:18
+# @Author : koray
+# @File :
+```
+
+
+
+### 2. print语句不同
+
+```python
+print "hello!"   # py2独有,可不用括号
+print("hello!")  # py2与py3都能用
+```
+
+
+
+### 3. input语句不同
+
+py3中从input输入的均为string类型,如果需要整形或浮点型需要强转;
+
+> `raw_input` : 获取到的输入永远都是str类型, py3就没有这个方法,已整合到input中
+>
+> `input` : 获取到的输入会自动判断其类型,字符格式必须加上单引号或者双引号
+
+```python
+print(int(input("请输入整数..")), type(input("随便输入..")))
+```
+
+
+
+
+
 ## 基础语法与编码规范
-
-
 
 ### 编码
 
@@ -85,6 +127,8 @@ from package import function_xx
 
 
 
+
+
 ## 数据类型
 
 
@@ -100,8 +144,6 @@ from package import function_xx
 | :--------: | :----------: | :--------: |
 |  **可变**  |     列表     | 字典, 集合 |
 | **不可变** | 字符串, 元组 |    数值    |
-
-
 
 
 
@@ -455,6 +497,9 @@ d = {'Michael': 95, 'Bob': 75, 'Tracy': 85}
 # ====================  1.获取  =======================
 # 根据键获取值,键不存在返回None.
 d.get('Michael')
+d['Michael']
+# 获取某个key
+tuple(data.keys())[0]  # Michael
 # 返回一个包含所有(k,v)元组的列表
 d.items()
 # 返回一个所有键组成的列表
@@ -2607,173 +2652,6 @@ re.findall(r'\d{3}\.\d{3}\.\d{3}\.\d{3}', "IP地址为192.168.100.140")
 
 
 
-
-
-
-
-## Py2与Py3的区别点
-
-
-
-### 1. 默认的编码不同
-
-py2默认编码为ascii, py3默认编码为utf-8
-
-故py2使用中文时,需要在py文件第一行注释  `# -*- coding: utf-8 -`
-
-
-
-### 2. print语句不同
-
-```python
-print "hello!"   # py2独有,可不用括号
-print("hello!")  # py2与py3都能用
-```
-
-
-
-### 3. input语句不同
-
-py3中从input输入的均为string类型,如果需要整形或浮点型需要强转;
-
-> `raw_input` : 获取到的输入永远都是str类型, py3就没有这个方法,已整合到input中
->
-> `input` : 获取到的输入会自动判断其类型,字符格式必须加上单引号或者双引号
-
-```python
-print(int(input("请输入整数..")), type(input("随便输入..")))
-```
-
-
-
-
-
-
-
-## 其他API操作
-
-
-
-### 随机数生成
-
-利用正态分布产生一些列的随机数, 模拟现实生活中一些场景 (二项分布、beta分布)
-
-1. rendom包
-
-```python
-# 生成0-1之间的随机数
-import rendom
-print random.random() 取[0,1)内的随机小数
-print random.randint(1,10) 取[0,10]内的随机小数
-print random.randrange(1,10,2)
-```
-
-2. numpy包
-
-```python
-import numpy as np
-np.random.rendom(size(3,2)) #产生0-1之间的符合均匀分布的随机数
-#产生0-1之间的8个随机数
-np.random.randint(1,10,8)
-#产生正态分布的随机数
-pn.random.randn()
-pn.random.randn(2,4)  #参数表示矩阵size为2行4列
-#产生二项分布的随机数
-np.random.binomial(10,0.5,(2,3)) #第一个参数表示均值,二表示方差,三表示矩阵的size
-# 产生卡方分布的随机数
-np.rendom.chisquare(2,(2,3)) #第一个参数表示自由度
-#gama伽马分布
-np.random.gamma(2,4,100) #前两个参数表示自由度
-```
-
-
-
-
-
-
-
-## python整合hive案例
-
-> 使用pyhive库来连接hive server2提供的对外接口, 使用sql语句来对数据进行查询, 并处理返回结果.
-
-
-
-### 1. 安装依赖
-
-```python
-pip install sasl
-pip install thrift
-pip install thrift-sasl
-pip install PyHive
-```
-
-
-
-### 2. 代码演示
-
-```python
-# -*- coding: utf-8 -*-
-
-import sys
-from pyhive import hive
-
-# hive配置
-hive_host = '1.15.55.232'
-hive_port = '7001'
-hive_username = 'root'
-hive_password = 'FyTOSDYPcp42esn7'
-hive_database = 'lazada_dw'
-hive_confign = {
-    'mapreduce.job.queuename': 'my_hive',
-    'hive.execution.engine': 'tez',
-    'hive.tez.container.max.java.heap.fraction': '0.9',
-    'tez.am.max.app.attempts': '5',
-    'tez.am.max.app.task.failed.attempts': '10',
-    'hive.tez.exec.print.summary': 'true',
-    'hive.merge.tezfiles': 'true',
-}
-
-
-def dhive():
-    try:
-        # 数据库连接
-        conn = hive.Connection(host=hive_host, port=hive_port, username=hive_username, database=hive_database, password=hive_password, configuration=hive_confign)
-        cursor = conn.cursor()
-        cursor.execute('select * from demo_table limit 10')
-
-        # 通过fetchall()取出的结果是表中单纯的数据
-        for res in cursor.fetchall():
-            print(res)  
-        print(cursor.fetchone())
-        print(cursor.fetchall()) 
-
-        # 获取列名
-        columns = cursor.description
-        col_names = []
-        for column in columns:
-            col_names.append(column[0])
-
-        # 关闭连接
-        conn.close()
-    except Exception:
-        print('excepion happen')
- 
-		
-if __name__ == "__main__":
-    # 调用
-    dhive()
-
-
-```
-
-
-
-
-
-
-
-
-
 ## Numpy科学计算库
 
 
@@ -3173,8 +3051,6 @@ np.random.permutation([1, 2, 3, 4])  # array([2, 1, 4, 3])
 ## Pands数据分析库
 
 Pands是一个强大的分析结构化数据的工具集, 它是基于Numpy, 可用于数据挖掘和数据分析, 同时也提供数据清洗的功能.
-
-
 
 
 
@@ -3918,28 +3794,27 @@ Requests是python的一个HTTP请求库, 基于python中的urllib模块实现.
 
 
 
+### 请求对象
 
+| 请求方式                 |
+| ------------------------ |
+| requests.get(url)        |
+| requests.post(url, data) |
+| requests.put(url)        |
+| requests.delete(url)     |
+| requests.head(url)       |
+| requests.options(url)    |
 
-
-
-
-
-### 请求方式
-
-| 请求方式              |
-| --------------------- |
-| requests.get(url)     |
-| requests.post(url)    |
-| requests.put(url)     |
-| requests.delete(url)  |
-| requests.head(url)    |
-| requests.options(url) |
+> get请求与post请求的区别
+>
+> - http的method字段不同.
+> - post可以附加body, 可以支持form、json、 xml、binary等各种数据格式.
+> - **无状态变化的建议使用get请求**, 如请求多次结果一致, 不涉及信息修改.
+> - **数据的写入与状态修改建议用post请求**.
 
 ```python
 # ====================  参数设置  =======================
-# 请求URL
-url = 'https://fanyi.baidu.com'
-# 请求参数,
+# 请求参数
 data = {'from': 'zh',
         'to': 'en',
         'query': '人生苦短'}
@@ -3947,7 +3822,12 @@ data = {'from': 'zh',
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36', }
 # 代理ip
 proxies = {"http": "http://100.10.1.10:3128", "https": "http://100.10.1.10:1080"}
-
+# cookies
+cookies = {"cookies" = "2348298091kjshfksu18239j..."}
+# 请求URL
+url = 'https://fanyi.baidu.com'
+# 传递URL参数: URL + ? + 键值对
+url = 'https://fanyi.baidu.com?%s=%s' % (tuple(data.keys())[2], data["query"])
 
 # ====================  get请求  =======================
 response1 = requests.get(url,  					# 请求url
@@ -3956,6 +3836,8 @@ response1 = requests.get(url,  					# 请求url
                         proxies=proxies,  		# 代理ip
                         timeout=5,  			# 超时参数
                         verify=True, 			# 避免ssl证书问题
+                        cookies=cookies,        # cookies
+                        allow_redirects=False,  # 禁用重定向
                         )
 
 
@@ -3964,35 +3846,258 @@ response2 = requests.post(url,
                          data=data,
                          headers=headers,
                          proxies=proxies,
+                         headers=headers,  		 
+                         proxies=proxies,  		 
+                         timeout=5,  			 
+                         verify=True, 			 
+                         cookies=cookies,         
+                         allow_redirects=False,   
                          )
 ```
 
 
 
+#### SSL证书验证
 
+Requests可以为HTTPS请求验证SSL证书, 就像web浏览器一样, SSL验证默认是开启的, 如果证书验证失败, Requests会抛出SSLError.为了避免这种情况的发生可以通过`verify=False`, 但是这样是可以访问到页面, 但是会提示：**InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate verification is strongly advised.** 
 
+```python
+import requests
 
+# 解决方案
+from requests.packages import urllib3
+urllib3.disable_warnings()    			# 就这一句就可以解决
 
-#### get与post的区别总结
-
-- http的method字段不同
-- post可以附加body，可以支持form、json、 xml、binary等各种数据格式
-- 无状态变化的建议使用get请求, 如请求多次结果一致,不涉及信息修改.
-- 数据的写入与状态修改建议用post.
-
-
-
-
-
-
-
-### response对象
-
-```
-
+response = requests.get("https://www.12306.cn",verify=False)
+print(response.status_code)
 ```
 
 
 
 
+
+### 响应对象
+
+| API                         | 描述                                                      |
+| --------------------------- | --------------------------------------------------------- |
+| response.text               | 返回Unicode类型的响应主体,主要取文本                      |
+| response.content            | 返回二进制的响应主体,主要取图片和文件等,中文显示为字符    |
+| response.status_code        | 返回状态码                                                |
+| response.reason             | 返回状态原因                                              |
+| response.headers            | 返回响应头                                                |
+| response.request.headers    | 返回请求消息的报头                                        |
+| response.encoding           | 返回编码方式                                              |
+| response.cookies            | 返回cookies                                               |
+| response.url                | 返回请求URL                                               |
+| response.history            | 访问重定向的历史记录,返回按照从老到近的请求进行排序的列表 |
+| response.raise_for_status() | 响应码不为200时抛出异常                                   |
+| response.raw                | 原始响应体, urllib的HTTPResponse对象                      |
+| response.json()             | 转换成json格式数据                                        |
+| response.elapsed            | 发送请求到接收到响应所花费的时长                          |
+| response.close              | 关闭连接                                                  |
+
+
+
+
+
+### 页面状态码
+
+```python
+100: ('continue',),
+101: ('switching_protocols',),
+102: ('processing',),
+103: ('checkpoint',),
+122: ('uri_too_long', 'request_uri_too_long'),
+200: ('ok', 'okay', 'all_ok', 'all_okay', 'all_good', '\o/', '✓'),
+201: ('created',),
+202: ('accepted',),
+203: ('non_authoritative_info', 'non_authoritative_information'),
+204: ('no_content',),
+205: ('reset_content', 'reset'),
+206: ('partial_content', 'partial'),
+207: ('multi_status', 'multiple_status', 'multi_stati', 'multiple_stati'),
+208: ('already_reported',),
+226: ('im_used',),
+
+Redirection.
+300: ('multiple_choices',),
+301: ('moved_permanently', 'moved', '\o-'),
+302: ('found',),
+303: ('see_other', 'other'),
+304: ('not_modified',),
+305: ('use_proxy',),
+306: ('switch_proxy',),
+307: ('temporary_redirect', 'temporary_moved', 'temporary'),
+308: ('permanent_redirect',
+'resume_incomplete', 'resume',), # These 2 to be removed in 3.0
+
+Client Error.
+400: ('bad_request', 'bad'),
+401: ('unauthorized',),
+402: ('payment_required', 'payment'),
+403: ('forbidden',),
+404: ('not_found', '-o-'),
+405: ('method_not_allowed', 'not_allowed'),
+406: ('not_acceptable',),
+407: ('proxy_authentication_required', 'proxy_auth', 'proxy_authentication'),
+408: ('request_timeout', 'timeout'),
+409: ('conflict',),
+410: ('gone',),
+411: ('length_required',),
+412: ('precondition_failed', 'precondition'),
+413: ('request_entity_too_large',),
+414: ('request_uri_too_large',),
+415: ('unsupported_media_type', 'unsupported_media', 'media_type'),
+416: ('requested_range_not_satisfiable', 'requested_range', 'range_not_satisfiable'),
+417: ('expectation_failed',),
+418: ('im_a_teapot', 'teapot', 'i_am_a_teapot'),
+421: ('misdirected_request',),
+422: ('unprocessable_entity', 'unprocessable'),
+423: ('locked',),
+424: ('failed_dependency', 'dependency'),
+425: ('unordered_collection', 'unordered'),
+426: ('upgrade_required', 'upgrade'),
+428: ('precondition_required', 'precondition'),
+429: ('too_many_requests', 'too_many'),
+431: ('header_fields_too_large', 'fields_too_large'),
+444: ('no_response', 'none'),
+449: ('retry_with', 'retry'),
+450: ('blocked_by_windows_parental_controls', 'parental_controls'),
+451: ('unavailable_for_legal_reasons', 'legal_reasons'),
+499: ('client_closed_request',),
+
+Server Error.
+500: ('internal_server_error', 'server_error', '/o\', '✗'),
+501: ('not_implemented',),
+502: ('bad_gateway',),
+503: ('service_unavailable', 'unavailable'),
+504: ('gateway_timeout',),
+505: ('http_version_not_supported', 'http_version'),
+506: ('variant_also_negotiates',),
+507: ('insufficient_storage',),
+509: ('bandwidth_limit_exceeded', 'bandwidth'),
+510: ('not_extended',),
+511: ('network_authentication_required', 'network_auth', 'network_authentication'),
+```
+
+
+
+### 案例
+
+爬取疫情数据, 并使用图表展示数据.
+
+```python
+# -*- coding: utf-8 -*- 
+# @Time : 2021/8/24 11:18
+# @Author : koray
+# @File :
+
+"""
+请求URL的获取思路:
+
+    1.从页面找到数据来源的url
+    url = 'https://api.inews.qq.com/newsqa/v1/automation/foreign/daily/list?country=%E7%BE%8E%E5%9B%BD&'
+
+    2.解析url传入的参数
+    parse.unquote(url)
+    ==>  https://api.inews.qq.com/newsqa/v1/automation/foreign/daily/list?country=美国&
+
+    3.设置url+?+键值对的拼接形式,从而动态传参获得对应的数据
+    URL = 'https://api.inews.qq.com/newsqa/v1/automation/foreign/daily/list?country=%s&'
+"""
+
+import requests
+from urllib import parse
+import json
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 请求URL
+_URL = 'https://api.inews.qq.com/newsqa/v1/automation/foreign/daily/list?country=%s&'
+_URL2 = 'https://api.inews.qq.com/newsqa/v1/automation/foreign/daily/list'
+
+# 游览器的请求头信息
+_headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36',
+    'Origin': 'https://news.qq.com',
+    'Referer': 'https://news.qq.com/'
+}
+
+
+# url拼接参数方式爬取
+def get_respones_url(country):
+    # 1.将参数转化为字符类型并传入
+    url = _URL % (parse.quote(country))
+    print("爬取URL : ", url)
+    respones = requests.get(url, headers=_headers)
+    return respones
+
+
+# 请求参数传入方式爬取
+def get_respones_para(country):
+    # 1.将参数转化为字符类型并传入
+    url = _URL2
+    print("爬取URL : ", url)
+    # 2.请求参数
+    data = {"country": country, }
+    respones = requests.post(url, data=data, headers=_headers)
+    return respones
+
+
+if __name__ == "__main__":
+
+    try:
+        # country = input("请输入查询国家 : ")
+        country = "美国"
+        res = get_respones_para(country)
+        # print(res.text)
+        """ 
+        {"ret": 0, "info": "", 
+        "data": [
+            {  "y": "2020","date": "01.28","confirm_add": 0,"confirm": 5,"heal": 0,"dead": 0},
+            { "y": "2020","date": "01.29","confirm_add": 0,"confirm": 5,"heal": 0,"dead": 0 },
+            { "y": "2020","date": "01.30","confirm_add": 1,"confirm": 6,"heal": 0,"dead": 0 }
+            ...   ]
+        }
+        """
+
+        # 判断请求是否成功
+        if res.status_code == requests.codes.ok:
+            # 将数据解析成json数据
+            data = json.loads(res.text)
+            # 获得json中data属性数据
+            # print(data['data'])
+            """ 
+            [
+            {  "y": "2020","date": "01.28","confirm_add": 0,"confirm": 5,"heal": 0,"dead": 0},
+            { "y": "2020","date": "01.29","confirm_add": 0,"confirm": 5,"heal": 0,"dead": 0 },
+            { "y": "2020","date": "01.30","confirm_add": 1,"confirm": 6,"heal": 0,"dead": 0 }
+            ...   ]
+            """
+
+            # 转为DataFrame类型
+            df = pd.DataFrame(data['data'])
+            # print(df)
+            """ 
+                    y   date  confirm_add   confirm      heal    dead
+            0    2020  01.28            0         5         0       0
+            1    2020  01.29            0         5         0       0
+            2    2020  01.30            1         6         0       0
+            ..    ...    ...          ...       ...       ...     ...
+            [553 rows x 6 columns]
+            """
+
+            # 设置画布大小
+            plt.figure(figsize=(10, 8))
+            # X轴:要与数据行数一致   Y轴:某个列字段
+            plt.plot([i for i in range(576)], df["confirm"])
+            plt.show()
+
+        else:
+            print("Request Error to :", res.status_code)
+            exit()
+            
+    except Exception as e:
+        print("异常捕获信息 : ", e)
+```
 
