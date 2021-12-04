@@ -15,7 +15,7 @@ services:
     image: codercom/code-server
     ports:
       - "1024:8080"
-    volumes:
+    volumes:0
       - "/soft/code-server/.config:/home/coder/.config"  # 配置文件
       - "/soft/code-server/project:/home/coder/project"  # 项目存放
     environment:
