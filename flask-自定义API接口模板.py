@@ -12,6 +12,7 @@ from flask import Flask, request, jsonify
 server = Flask(__name__)
 
 
+# http://192.168.39.183:9999/testGet?a=1&b=5
 @server.route('/testGet', methods=['get'])
 def testGet():
     print(request)
